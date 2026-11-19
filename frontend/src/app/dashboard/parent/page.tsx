@@ -109,7 +109,7 @@ export default function ParentPortal() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar title="Parent Portal • A. P PUBLIC SCHOOL" />
 
-        <main className="p-6 space-y-6">
+        <main className="p-3.5 sm:p-6 pb-24 md:pb-8 space-y-4 sm:space-y-6">
           {successMsg && (
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center space-x-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />

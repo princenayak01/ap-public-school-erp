@@ -14,7 +14,9 @@ import {
   LogOut,
   Clock,
   ShieldCheck,
-  Lock
+  Lock,
+  Menu,
+  X
 } from 'lucide-react';
 
 export default function Sidebar({ userRole }: { userRole?: string }) {
@@ -22,6 +24,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [role, setRole] = useState<'TEACHER' | 'PARENT' | 'PRINCIPAL'>('TEACHER');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -51,6 +54,25 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
     }
   }, [pathname, userRole]);
 
+  // Listen for mobile drawer toggle events from Navbar
+  useEffect(() => {
+    const handleToggle = () => setMobileOpen((prev) => !prev);
+    const handleClose = () => setMobileOpen(false);
+
+    window.addEventListener('toggle-mobile-sidebar', handleToggle);
+    window.addEventListener('close-mobile-sidebar', handleClose);
+
+    return () => {
+      window.removeEventListener('toggle-mobile-sidebar', handleToggle);
+      window.removeEventListener('close-mobile-sidebar', handleClose);
+    };
+  }, []);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   const handleLogout = () => {
     localStorage.removeItem('apps_token');
     localStorage.removeItem('apps_user');
@@ -58,7 +80,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
     router.push('/login');
   };
 
-  // 1. Teacher-Only Navigation (Strictly Class Incharge features)
+  // 1. Teacher-Only Navigation
   const teacherNav = [
     { name: 'Teacher Command Center', href: '/dashboard/teacher', icon: LayoutDashboard },
     { name: 'Students & Data Upload', href: '/dashboard/students', icon: GraduationCap },
@@ -68,7 +90,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
     { name: 'AI School Assistant', href: '/dashboard/ai-assistant', icon: Bot },
   ];
 
-  // 2. Parent-Only Navigation (Strictly View-Only + Fee Payment)
+  // 2. Parent-Only Navigation
   const parentNav = [
     { name: 'My Children', href: '/dashboard/parent', icon: Users },
     { name: 'Fee Dues & Online Pay', href: '/dashboard/fees', icon: CreditCard },
@@ -78,7 +100,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
     { name: 'AI School Assistant', href: '/dashboard/ai-assistant', icon: Bot },
   ];
 
-  // 3. Principal Master Navigation (Super Admin Control)
+  // 3. Principal Master Navigation
   const principalNav = [
     { name: 'Principal Master Dashboard', href: '/dashboard/principal', icon: LayoutDashboard },
     { name: 'Students & Admissions', href: '/dashboard/students', icon: GraduationCap },
@@ -92,24 +114,57 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
 
   const navItems = role === 'TEACHER' ? teacherNav : role === 'PARENT' ? parentNav : principalNav;
 
-  return (
-    <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col justify-between border-r border-slate-800 shadow-xl shrink-0 font-sans">
+  // Bottom Nav shortcuts tailored for mobile view
+  const bottomNavItems =
+    role === 'TEACHER'
+      ? [
+          { name: 'Home', href: '/dashboard/teacher', icon: LayoutDashboard },
+          { name: 'Students', href: '/dashboard/students', icon: GraduationCap },
+          { name: 'Attendance', href: '/dashboard/attendance', icon: CalendarCheck2 },
+          { name: 'Marks', href: '/dashboard/exams', icon: FileSpreadsheet },
+        ]
+      : role === 'PARENT'
+      ? [
+          { name: 'Ward', href: '/dashboard/parent', icon: Users },
+          { name: 'Pay Fees', href: '/dashboard/fees', icon: CreditCard },
+          { name: 'Attendance', href: '/dashboard/attendance', icon: CalendarCheck2 },
+          { name: 'Report Card', href: '/dashboard/exams', icon: FileSpreadsheet },
+        ]
+      : [
+          { name: 'Overview', href: '/dashboard/principal', icon: LayoutDashboard },
+          { name: 'Students', href: '/dashboard/students', icon: GraduationCap },
+          { name: 'Fees', href: '/dashboard/fees', icon: CreditCard },
+          { name: 'Exams', href: '/dashboard/exams', icon: FileSpreadsheet },
+        ];
+
+  const renderNavContent = () => (
+    <div className="flex flex-col justify-between h-full">
       <div>
         {/* School Brand Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center space-x-3 bg-slate-950/80">
-          <div className="w-11 h-11 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center p-0.5 border border-amber-500/30 shadow-lg shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="A.P. Public School Logo" className="w-full h-full object-contain" />
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center p-0.5 border border-amber-500/30 shadow-lg shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h1 className="font-black text-xs tracking-tight text-white leading-tight uppercase">
+                A. P. PUBLIC SCHOOL
+              </h1>
+              <p className="text-[10px] text-amber-400 font-semibold">Baruasagar • Jhansi (CBSE)</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-black text-xs tracking-tight text-white leading-tight uppercase">
-              A. P PUBLIC SCHOOL
-            </h1>
-            <p className="text-[10px] text-amber-400 font-semibold">Baruasagar • Jhansi (CBSE)</p>
-          </div>
+
+          {/* Close button for mobile drawer */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Authenticated Account Badge (Strictly Locked - NO Switcher) */}
+        {/* Authenticated Account Badge */}
         <div className="p-3 bg-slate-950/90 border-b border-slate-800">
           <div className="flex items-center space-x-2">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs text-white ${
@@ -131,13 +186,13 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
                 }`}>
                   {role} ACCOUNT
                 </span>
-                <span className="text-[9px] text-slate-500 font-mono">Locked</span>
+                <span className="text-[9px] text-slate-500 font-mono">Protected</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Navigation Links for Active Authenticated Role */}
+        {/* Navigation Links */}
         <nav className="p-3 space-y-1">
           <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
             {role === 'TEACHER' ? 'Teacher Classroom Menu' : role === 'PARENT' ? 'Parent Ward Menu' : 'Executive Admin Menu'}
@@ -150,6 +205,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={() => setMobileOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                   isActive
                     ? role === 'TEACHER'
@@ -185,12 +241,73 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-colors cursor-pointer min-h-[40px]"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Logout ({role})</span>
         </button>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* 1. Desktop Static Sidebar */}
+      <aside className="hidden md:flex w-64 bg-slate-900 text-white min-h-screen flex-col justify-between border-r border-slate-800 shadow-xl shrink-0 font-sans sticky top-0 h-screen overflow-y-auto">
+        {renderNavContent()}
+      </aside>
+
+      {/* 2. Mobile Slide-Over Drawer with Backdrop */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Dark Backdrop */}
+          <div
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity"
+          />
+
+          {/* Drawer Pane */}
+          <div className="relative w-72 max-w-[85vw] bg-slate-900 text-white shadow-2xl flex flex-col z-50 h-full overflow-y-auto border-r border-slate-800 animate-in slide-in-from-left duration-200">
+            {renderNavContent()}
+          </div>
+        </div>
+      )}
+
+      {/* 3. Mobile Bottom Navigation Bar (Native App Style) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 px-2 py-1.5 flex items-center justify-around shadow-2xl">
+        {bottomNavItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition-all min-w-[56px] ${
+                isActive
+                  ? role === 'TEACHER'
+                    ? 'text-amber-400 font-black'
+                    : role === 'PARENT'
+                    ? 'text-teal-400 font-black'
+                    : 'text-indigo-400 font-black'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Icon className={`w-4 h-4 mb-0.5 ${isActive ? 'scale-110' : ''} transition-transform`} />
+              <span className="truncate">{item.name}</span>
+            </Link>
+          );
+        })}
+
+        {/* Menu Drawer Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold text-slate-400 hover:text-white transition-all min-w-[56px]"
+        >
+          <Menu className="w-4 h-4 mb-0.5" />
+          <span>Menu</span>
+        </button>
+      </div>
+    </>
   );
 }

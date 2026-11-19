@@ -109,7 +109,7 @@ export default function AIAssistantPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar title="AI School Assistant (RAG Knowledge Engine)" />
 
-        <main className="p-6 max-w-4xl w-full mx-auto flex-1 flex flex-col">
+        <main className="p-3.5 sm:p-6 pb-24 md:pb-8 max-w-4xl w-full mx-auto flex-1 flex flex-col">
           {/* Header */}
           <div className="p-4 rounded-2xl bg-indigo-950 text-white shadow-md flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">

@@ -69,7 +69,7 @@ export default function TeacherDashboardPage() {
         <Sidebar userRole="PARENT" />
         <div className="flex-1 flex flex-col min-w-0">
           <Navbar title="Teacher Portal (Restricted)" />
-          <main className="p-8 max-w-2xl mx-auto w-full my-auto text-center">
+          <main className="p-4 sm:p-8 pb-24 md:pb-8 max-w-2xl mx-auto w-full my-auto text-center">
             <div className="p-8 rounded-3xl bg-white border border-rose-200 shadow-xl space-y-4">
               <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-200">
                 <Lock className="w-8 h-8" />
@@ -103,7 +103,7 @@ export default function TeacherDashboardPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar title="Class Teacher Command Center (Class 4-A)" />
 
-        <main className="p-6 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="p-3.5 sm:p-6 pb-24 md:pb-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full">
           {/* Welcome & Classroom Incharge Banner */}
           <div className="bg-gradient-to-r from-amber-700 via-slate-900 to-indigo-950 text-white p-6 rounded-3xl shadow-sm border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>

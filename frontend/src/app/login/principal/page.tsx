@@ -78,53 +78,53 @@ export default function PrincipalLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] bg-slate-950 flex flex-col justify-center items-center p-3.5 sm:p-4 relative overflow-hidden font-sans">
       {/* Background Lighting */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/20 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-teal-600/20 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full bg-indigo-600/20 blur-[100px] sm:blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full bg-teal-600/20 blur-[100px] sm:blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-indigo-500/30 rounded-3xl shadow-2xl p-8 relative z-10">
+      <div className="w-full max-w-sm sm:max-w-md bg-slate-900/95 backdrop-blur-xl border border-indigo-500/30 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 relative z-10">
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="w-20 h-20 mx-auto rounded-3xl overflow-hidden bg-white/10 p-1 flex items-center justify-center shadow-xl shadow-amber-500/20 mb-3 ring-2 ring-amber-400/40">
+        <div className="text-center mb-5 sm:mb-6">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl sm:rounded-3xl overflow-hidden bg-white/10 p-1 flex items-center justify-center shadow-xl shadow-amber-500/20 mb-2.5 sm:mb-3 ring-2 ring-amber-400/40">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="A. P Public School Logo" className="w-full h-full object-contain" />
+            <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-full object-contain" />
           </div>
           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
             Master Administrative Control
           </span>
-          <h1 className="text-xl font-black text-white tracking-tight mt-2">Principal & Admin Login</h1>
-          <p className="text-xs text-slate-400 mt-1">A. P. PUBLIC SCHOOL, Baruasagar, Jhansi</p>
+          <h1 className="text-lg sm:text-xl font-black text-white tracking-tight mt-2">Principal & Admin Login</h1>
+          <p className="text-[11px] sm:text-xs text-slate-400 mt-1">A. P. PUBLIC SCHOOL, Baruasagar, Jhansi</p>
         </div>
 
         {successNotice && (
-          <div className="mb-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center space-x-2">
+          <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center space-x-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{successNotice}</span>
           </div>
         )}
 
         {error && (
-          <div className="mb-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold">
+          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
               Registered Mobile Number or Email
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
                 autoComplete="off"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500 font-mono"
-                placeholder="e.g. 7348011701 or principal@appublicschool.edu.in"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500 font-mono"
+                placeholder="7348011701 or email"
               />
             </div>
           </div>
@@ -134,14 +134,14 @@ export default function PrincipalLoginPage() {
               Master Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500"
                 placeholder="Enter Master Password"
               />
             </div>
@@ -150,7 +150,7 @@ export default function PrincipalLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-white font-black text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer disabled:opacity-50 min-h-[44px]"
           >
             <span>{loading ? 'Authenticating...' : 'Login as Principal'}</span>
             <ArrowRight className="w-4 h-4" />
@@ -158,8 +158,8 @@ export default function PrincipalLoginPage() {
         </form>
 
         <div className="mt-5 pt-4 border-t border-slate-800 text-center space-y-2">
-          <p className="text-[11px] text-slate-500">
-            <Link href="/login" className="hover:text-slate-300">
+          <p className="text-xs text-slate-500">
+            <Link href="/login" className="hover:text-slate-300 font-medium">
               ← Main Portal Switcher
             </Link>
           </p>

@@ -42,24 +42,24 @@ export default function LandingPage() {
       </div>
 
       {/* Top Navigation */}
-      <nav className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-xl sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3.5">
-          <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white/10 p-0.5 flex items-center justify-center shadow-xl shadow-amber-500/10 ring-2 ring-amber-400/30">
+      <nav className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-xl sticky top-0 z-50 px-3.5 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-2.5 sm:space-x-3.5">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl overflow-hidden bg-white/10 p-0.5 flex items-center justify-center shadow-xl shadow-amber-500/10 ring-2 ring-amber-400/30 flex-shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.png" alt="A. P Public School Logo" className="w-full h-full object-contain" />
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-base tracking-tight text-white block">A. P PUBLIC SCHOOL</span>
-              <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30">
+          <div className="min-w-0">
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white truncate block">A. P PUBLIC SCHOOL</span>
+              <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[9px] sm:text-[10px] border border-amber-500/30">
                 CBSE
               </span>
             </div>
-            <span className="text-[11px] text-amber-400 block font-medium">Baruasagar, Jhansi (UP) • Learn • Grow • Succeed</span>
+            <span className="text-[10px] sm:text-[11px] text-amber-400 block font-medium truncate">Darausagar • Jhansi (UP) • Learn • Grow • Succeed</span>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
           <Link
             href="/dashboard/parent"
             className="hidden sm:flex px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs tracking-wide transition-all items-center space-x-1.5"
@@ -68,9 +68,9 @@ export default function LandingPage() {
           </Link>
           <Link
             href="/login"
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-teal-600 hover:from-indigo-500 hover:to-teal-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-1.5 transform hover:-translate-y-0.5"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-teal-600 hover:from-indigo-500 hover:to-teal-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-1.5 transform hover:-translate-y-0.5"
           >
-            <span>Sign In to Portal</span>
+            <span>Sign In</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

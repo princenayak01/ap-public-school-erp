@@ -20,22 +20,22 @@ export default function UnifiedLoginDirectory() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] bg-slate-950 flex flex-col justify-center items-center py-8 px-3.5 sm:px-4 relative overflow-hidden font-sans">
       {/* Background Glow Blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-indigo-600/20 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[550px] h-[550px] rounded-full bg-teal-500/20 blur-[130px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] rounded-full bg-indigo-600/20 blur-[100px] sm:blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] rounded-full bg-teal-500/20 blur-[100px] sm:blur-[130px] pointer-events-none" />
 
-      <div className="w-full max-w-4xl relative z-10 space-y-8">
+      <div className="w-full max-w-4xl relative z-10 space-y-6 sm:space-y-8">
         {/* Institutional Branding */}
         <div className="text-center space-y-2">
-          <div className="w-20 h-20 mx-auto rounded-3xl overflow-hidden bg-white/10 p-1 flex items-center justify-center shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl sm:rounded-3xl overflow-hidden bg-white/10 p-1 flex items-center justify-center shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="A. P Public School Logo" className="w-full h-full object-contain" />
+            <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+          <span className="inline-block px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-extrabold bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
             CBSE Affiliated • Code 2130000 • Baruasagar, Jhansi
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
             A. P. PUBLIC SCHOOL
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">

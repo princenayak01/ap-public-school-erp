@@ -117,7 +117,7 @@ export default function PrincipalDashboard() {
         <Sidebar userRole={activeRole} />
         <div className="flex-1 flex flex-col min-w-0">
           <Navbar title="Principal Executive Dashboard (Restricted)" />
-          <main className="p-8 max-w-2xl mx-auto w-full my-auto text-center">
+          <main className="p-4 sm:p-8 pb-24 md:pb-8 max-w-2xl mx-auto w-full my-auto text-center">
             <div className="p-8 rounded-3xl bg-white border border-rose-200 shadow-xl space-y-4">
               <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-200">
                 <ShieldAlert className="w-8 h-8" />
@@ -153,7 +153,7 @@ export default function PrincipalDashboard() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar title="Principal & Super Admin Dashboard" />
 
-        <main className="p-6 space-y-6 overflow-y-auto">
+        <main className="p-3.5 sm:p-6 pb-24 md:pb-8 space-y-4 sm:space-y-6 overflow-y-auto">
           {/* Welcome Banner */}
           <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 relative overflow-hidden shadow-xl border border-slate-800">
             <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />

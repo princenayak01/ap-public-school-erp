@@ -437,7 +437,7 @@ export default function FeesPage() {
         <Sidebar userRole="TEACHER" />
         <div className="flex-1 flex flex-col min-w-0">
           <Navbar title="Fees Management (Restricted)" />
-          <main className="p-8 max-w-2xl mx-auto w-full my-auto text-center">
+          <main className="p-4 sm:p-8 pb-24 md:pb-8 max-w-2xl mx-auto w-full my-auto text-center">
             <div className="p-8 rounded-3xl bg-white border border-rose-200 shadow-xl space-y-4">
               <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-200">
                 <ShieldAlert className="w-8 h-8" />
@@ -476,7 +476,7 @@ export default function FeesPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar title="Fees Management & Razorpay Gateway" />
 
-        <main className="p-6 space-y-6">
+        <main className="p-3.5 sm:p-6 pb-24 md:pb-8 space-y-4 sm:space-y-6">
           {successMsg && (
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center space-x-2 shadow-xs">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

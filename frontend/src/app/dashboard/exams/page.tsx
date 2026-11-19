@@ -352,7 +352,7 @@ export default function ExamsPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar title="CBSE Examination Management & Report Cards" />
 
-        <main className="p-6 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="p-3.5 sm:p-6 pb-24 md:pb-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full">
           {/* Header & Quick Stats */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
             <div>
