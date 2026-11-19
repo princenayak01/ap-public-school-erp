@@ -462,14 +462,26 @@ export default function PrincipalDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Admissions */}
             <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
                   <h3 className="text-sm font-bold text-slate-800">Recent Student Admissions</h3>
                   <p className="text-xs text-slate-500">New enrollment records with unique student IDs</p>
                 </div>
-                <a href="/dashboard/students" className="text-xs font-bold text-teal-600 hover:underline">
-                  View All →
-                </a>
+                <div className="flex items-center space-x-2">
+                  <div className="relative w-full sm:w-48">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
+                    <input
+                      type="text"
+                      placeholder="Search name / ID..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <a href="/dashboard/students" className="text-xs font-bold text-teal-600 hover:underline shrink-0">
+                    View All →
+                  </a>
+                </div>
               </div>
 
               <div className="overflow-x-auto">

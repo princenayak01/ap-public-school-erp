@@ -15,7 +15,9 @@ import {
   Sparkles,
   Printer,
   ShieldAlert,
-  ArrowRight
+  ArrowRight,
+  Search,
+  X
 } from 'lucide-react';
 
 const initialClassStudents: any[] = [];
@@ -28,6 +30,7 @@ export default function AttendancePage() {
   const [students, setStudents] = useState(initialClassStudents);
   const [successMsg, setSuccessMsg] = useState('');
   const [saving, setSaving] = useState(false);
+  const [searchName, setSearchName] = useState('');
 
   // Bulk range state
   const [startDate, setStartDate] = useState('2026-11-01');
@@ -145,6 +148,16 @@ export default function AttendancePage() {
   const presentCount = students.filter((s) => s.status === 'PRESENT').length;
   const absentCount = students.filter((s) => s.status === 'ABSENT').length;
   const lateCount = students.filter((s) => s.status === 'LATE').length;
+
+  const visibleStudents = students.filter((s) => {
+    if (!searchName.trim()) return true;
+    const q = searchName.toLowerCase().trim();
+    return (
+      (s.name && s.name.toLowerCase().includes(q)) ||
+      (s.admissionNo && s.admissionNo.toLowerCase().includes(q)) ||
+      String(s.rollNo).includes(q)
+    );
+  });
   const attendanceRate = students.length > 0 ? Math.round((presentCount / students.length) * 100) : 0;
 
   if (activeRole === 'PARENT') {
@@ -295,20 +308,41 @@ export default function AttendancePage() {
 
               {/* Attendance Table */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-xs font-bold">
+                <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-3 text-xs font-bold">
                     <span className="text-slate-800">Class {selectedClass} - {selectedSection}</span>
                     <span className="text-emerald-600">● {presentCount} Present</span>
                     <span className="text-rose-600">● {absentCount} Absent</span>
                     <span className="text-amber-600">● {lateCount} Late</span>
                   </div>
-                  <button
-                    onClick={saveDailyAttendance}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-indigo-600/20"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save Daily Attendance</span>
-                  </button>
+
+                  <div className="flex items-center space-x-2">
+                    <div className="relative w-full sm:w-56">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                      <input
+                        type="text"
+                        placeholder="Search student by name..."
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                        className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500"
+                      />
+                      {searchName && (
+                        <button
+                          onClick={() => setSearchName('')}
+                          className="absolute right-2 top-2 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      onClick={saveDailyAttendance}
+                      className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-indigo-600/20 shrink-0"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -322,17 +356,17 @@ export default function AttendancePage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {students.length === 0 ? (
+                      {visibleStudents.length === 0 ? (
                         <tr>
                           <td colSpan={4} className="py-12 text-center">
                             <p className="text-xs font-bold text-slate-700">No Student Records Found</p>
                             <p className="text-[11px] text-slate-400 mt-1">
-                              All fake student attendance records have been cleared.
+                              {searchName ? `"${searchName}" se match karta koi student nahi mila.` : 'All fake student attendance records have been cleared.'}
                             </p>
                           </td>
                         </tr>
                       ) : (
-                        students.map((st) => (
+                        visibleStudents.map((st) => (
                         <tr key={st.studentId} className="hover:bg-slate-50/70 transition-colors">
                           <td className="py-3 px-4 font-bold text-slate-700">{st.rollNo}</td>
                           <td className="py-3 px-4 font-mono font-bold text-indigo-900">{st.admissionNo}</td>
