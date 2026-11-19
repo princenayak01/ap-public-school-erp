@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -48,7 +50,7 @@ export default function TeacherDashboardPage() {
 
     async function loadStats() {
       try {
-        const res = await fetch('/api/v1/students');
+        const res = await authenticatedFetch('/api/v1/students');
         const data = await res.json();
         if (data.success && data.data) {
           setStudentCount(data.data.length);
