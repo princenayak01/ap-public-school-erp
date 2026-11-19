@@ -123,11 +123,7 @@ export class AuthService {
 
     // Trigger WhatsApp notification for Principal OTP verification
     try {
-      await WhatsAppService.sendMessage(
-        cleanPhone,
-        'apps_principal_otp_verification',
-        [code, '10 minutes', 'A. P PUBLIC SCHOOL, Jhansi']
-      );
+      await WhatsAppService.sendAuthOtp(cleanPhone, code);
     } catch (waErr) {
       console.warn('[WHATSAPP_DISPATCH] WhatsApp message queued/logged for:', cleanPhone);
     }
