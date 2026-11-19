@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import SecuritySessionGuard from '@/components/SecuritySessionGuard';
 
 export const metadata: Metadata = {
   title: 'A. P PUBLIC SCHOOL • School ERP & Parent Portal (CBSE)',
@@ -13,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased bg-slate-50 text-slate-900">{children}</body>
+      <body className="antialiased bg-slate-50 text-slate-900">
+        <SecuritySessionGuard>{children}</SecuritySessionGuard>
+      </body>
     </html>
   );
 }
