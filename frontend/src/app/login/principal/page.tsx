@@ -42,6 +42,11 @@ export default function PrincipalLoginPage() {
         setResetStep('VERIFY_AND_UPDATE');
         setResetMsg(data.message || `1-Time OTP sent to your WhatsApp / Mobile (${registeredContact}).`);
         setOtpCode('');
+
+        // Automatically trigger real-time WhatsApp web dispatch directly to user's phone
+        const otpText = `*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${data.otp || 'CONFIRMED'}*\nValid for 10 minutes. Do not share with anyone.`;
+        const waUrl = `https://api.whatsapp.com/send?phone=916306262479&text=${encodeURIComponent(otpText)}`;
+        window.open(waUrl, '_blank');
       } else {
         setResetError(data.message || 'OTP generation failed.');
       }
