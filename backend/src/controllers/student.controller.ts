@@ -103,21 +103,21 @@ export class StudentController {
 
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      try {
-        const student = await StudentService.getStudentById(req.params.id);
-        return res.status(200).json({
-          success: true,
-          data: student,
-        });
-      } catch (dbErr) {
-        const st = datastore.getStudents().find((s) => s.id === req.params.id) || datastore.getStudents()[0];
-        return res.status(200).json({
-          success: true,
-          data: st,
+      if (!isDbOnline) {
+        return res.status(503).json({
+          success: false,
+          message: 'Student records are temporarily unavailable. Please try again when the database connection is restored.',
+          code: 'DATABASE_UNAVAILABLE',
         });
       }
-    } catch (err) {
-      next(err);
+
+      const student = await StudentService.getStudentById(req.params.id);
+      return res.status(200).json({ success: true, data: student });
+    } catch (err: any) {
+      if (err?.status === 404) {
+        return res.status(404).json({ success: false, message: 'Student not found.' });
+      }
+      return next(err);
     }
   }
 
