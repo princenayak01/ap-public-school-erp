@@ -7,8 +7,8 @@ import { ShieldCheck, Lock, Mail, ArrowRight, KeyRound, CheckCircle2, ShieldAler
 
 export default function PrincipalLoginPage() {
   const router = useRouter();
-  const [identifier, setIdentifier] = useState('principal@appublicschool.edu.in');
-  const [password, setPassword] = useState('Admin@2026');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -86,8 +86,9 @@ export default function PrincipalLoginPage() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
+                autoComplete="off"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500 font-mono"
-                placeholder="principal@appublicschool.edu.in"
+                placeholder="Enter Principal / Admin Email"
               />
             </div>
           </div>
@@ -103,8 +104,9 @@ export default function PrincipalLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="new-password"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500"
-                placeholder="••••••••"
+                placeholder="Enter Master Password"
               />
             </div>
           </div>
