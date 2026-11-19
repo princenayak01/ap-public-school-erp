@@ -43,7 +43,16 @@ export class FeeController {
 
   static async getInvoices(req: Request, res: Response, next: NextFunction) {
     try {
-      const invoices = datastore.getFeeInvoices();
+      const { from, to } = req.query as { from?: string; to?: string };
+      let invoices = datastore.getFeeInvoices();
+      if (from && to) {
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+        invoices = invoices.filter((inv: any) => {
+          const invDate = new Date(inv.createdAt || inv.date || inv.timestamp || 0);
+          return invDate >= fromDate && invDate <= toDate;
+        });
+      }
       return res.status(200).json({
         success: true,
         data: invoices,

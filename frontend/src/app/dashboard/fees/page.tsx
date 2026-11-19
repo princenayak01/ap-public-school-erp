@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
+import FinancialYearSelect from '@/components/FinancialYearSelect';
 import Link from 'next/link';
 import {
   CreditCard,
@@ -55,6 +56,8 @@ export default function FeesPage() {
   const [successMsg, setSuccessMsg] = useState('');
   const [processing, setProcessing] = useState(false);
   const [activeRole, setActiveRole] = useState<'TEACHER' | 'PARENT' | 'PRINCIPAL'>('PRINCIPAL');
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  const [selectedMonth, setSelectedMonth] = useState<string>('All Months (Apr - Mar)');
 
   // Manual Receipt Form State
   const [formData, setFormData] = useState({
@@ -395,11 +398,38 @@ export default function FeesPage() {
     }
   };
 
-  const totalBilled = invoices.reduce((acc, inv) => acc + (Number(inv.total) || 0), 0);
-  const totalCollected = invoices.reduce((acc, inv) => acc + (Number(inv.paid) || 0), 0);
-  const totalPending = invoices.reduce((acc, inv) => acc + (Number(inv.balance) || 0), 0);
+  // Filter invoices according to selected Financial Year (April to March) and selected month
+  const filteredInvoices = invoices.filter((inv) => {
+    // Check Date range if invoice has createdAt/date
+    const invDateStr = inv.createdAt || inv.date || '';
+    if (invDateStr) {
+      const d = new Date(invDateStr);
+      if (!isNaN(d.getTime())) {
+        const fyStart = new Date(selectedYear, 3, 1); // 1 April selectedYear
+        const fyEnd = new Date(selectedYear + 1, 2, 31, 23, 59, 59); // 31 March selectedYear + 1
+        if (d < fyStart || d > fyEnd) {
+          // If invoice explicitly mentions session year
+          if (!inv.month?.includes(String(selectedYear)) && !inv.month?.includes(String(selectedYear + 1).slice(-2))) {
+            return false;
+          }
+        }
+      }
+    }
+
+    if (selectedMonth && selectedMonth !== 'All Months (Apr - Mar)') {
+      if (inv.month && !inv.month.toLowerCase().includes(selectedMonth.toLowerCase())) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const totalBilled = filteredInvoices.reduce((acc, inv) => acc + (Number(inv.total) || 0), 0);
+  const totalCollected = filteredInvoices.reduce((acc, inv) => acc + (Number(inv.paid) || 0), 0);
+  const totalPending = filteredInvoices.reduce((acc, inv) => acc + (Number(inv.balance) || 0), 0);
   const collectionRate = totalBilled > 0 ? ((totalCollected / totalBilled) * 100).toFixed(1) : '0.0';
-  const billedCount = invoices.length;
+  const billedCount = filteredInvoices.length;
 
   if (activeRole === 'TEACHER') {
     return (
@@ -456,25 +486,40 @@ export default function FeesPage() {
 
           {/* Metric Overview (Principal Only - Dynamic based on live data) */}
           {activeRole === 'PRINCIPAL' && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Billed (Session)</span>
-                <h3 className="text-2xl font-black text-slate-800 mt-2">₹{totalBilled.toLocaleString('en-IN')}</h3>
-                <p className="text-[11px] text-slate-500 mt-1">{billedCount} active invoices registered</p>
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100/70 p-3 rounded-2xl border border-slate-200">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-bold text-slate-700">Financial / Academic Year Data:</span>
+                  <span className="text-xs text-slate-500">Filter all metrics and invoices (April to March)</span>
+                </div>
+                <FinancialYearSelect
+                  selectedYear={selectedYear}
+                  onYearChange={setSelectedYear}
+                  selectedMonth={selectedMonth}
+                  onMonthChange={setSelectedMonth}
+                />
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-                <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider">Total Collected</span>
-                <h3 className="text-2xl font-black text-teal-700 mt-2">₹{totalCollected.toLocaleString('en-IN')}</h3>
-                <p className="text-[11px] text-teal-600 font-semibold mt-1">{collectionRate}% Collection Efficiency</p>
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Billed ({selectedMonth === 'All Months (Apr - Mar)' ? `Apr ${selectedYear} - Mar ${selectedYear + 1}` : selectedMonth})</span>
+                  <h3 className="text-2xl font-black text-slate-800 mt-2">₹{totalBilled.toLocaleString('en-IN')}</h3>
+                  <p className="text-[11px] text-slate-500 mt-1">{billedCount} invoices in this period</p>
+                </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-                <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Outstanding Dues</span>
-                <h3 className="text-2xl font-black text-amber-600 mt-2">₹{totalPending.toLocaleString('en-IN')}</h3>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  {totalPending > 0 ? 'Pending collection across sessions' : '✓ All fee accounts up to date (No Dues)'}
-                </p>
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider">Total Collected</span>
+                  <h3 className="text-2xl font-black text-teal-700 mt-2">₹{totalCollected.toLocaleString('en-IN')}</h3>
+                  <p className="text-[11px] text-teal-600 font-semibold mt-1">{collectionRate}% Collection Efficiency</p>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Outstanding Dues</span>
+                  <h3 className="text-2xl font-black text-amber-600 mt-2">₹{totalPending.toLocaleString('en-IN')}</h3>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    {totalPending > 0 ? 'Pending collection in this session' : '✓ All fee accounts up to date (No Dues)'}
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -623,15 +668,15 @@ export default function FeesPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {invoices.length === 0 ? (
+                    {filteredInvoices.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="py-14 text-center">
                           <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-3 border border-teal-100 shadow-inner">
                             <Receipt className="w-7 h-7" />
                           </div>
-                          <p className="text-sm font-bold text-slate-800">No Invoices in Ledger</p>
+                          <p className="text-sm font-bold text-slate-800">No Invoices in Selected Period</p>
                           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-                            Sabhi fake data clear ho chuke hain. Naya fee receipt auto create karne ke liye upar diye button par click karein.
+                            April {selectedYear} – March {selectedYear + 1} ({selectedMonth}) ke liye koi fee invoice nahi mila. Naya receipt add karne ke liye upar button par click karein.
                           </p>
                           <button
                             onClick={() => {
@@ -653,12 +698,12 @@ export default function FeesPage() {
                             className="mt-4 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md transition-all inline-flex items-center space-x-1.5"
                           >
                             <Plus className="w-4 h-4" />
-                            <span>Create First Fee Receipt</span>
+                            <span>Create Fee Receipt</span>
                           </button>
                         </td>
                       </tr>
                     ) : (
-                      invoices.map((inv) => (
+                      filteredInvoices.map((inv) => (
                         <tr key={inv.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="py-3 px-4">
                             <span className="font-mono font-bold text-indigo-900 block">{inv.receiptNo || inv.invoiceNo}</span>
