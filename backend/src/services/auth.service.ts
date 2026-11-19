@@ -1,7 +1,6 @@
 import prisma, { isDbOnline } from '../prisma/client';
 import { comparePassword } from '../utils/password';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
-import { Role } from '@prisma/client';
 
 /**
  * Production authentication is database-backed only.
@@ -45,9 +44,7 @@ export class AuthService {
       where: { OR: [{ email: key }, { phone: emailOrPhone }] },
       include: {
         teacherProfile: true,
-        parentProfile: {
-          include: { students: { include: { class: true, section: true } } },
-        },
+        parentProfile: true,
       },
     });
 
@@ -147,7 +144,18 @@ export class AuthService {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { teacherProfile: true, parentProfile: true },
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        name: true,
+        role: true,
+        avatarUrl: true,
+        isActive: true,
+        lastLoginAt: true,
+        teacherProfile: true,
+        parentProfile: true,
+      },
     });
     if (!user || !user.isActive) {
       throw { status: 404, message: 'User not found or inactive.' };
