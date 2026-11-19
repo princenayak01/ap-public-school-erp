@@ -23,19 +23,22 @@ router.post('/auth/register', AuthController.register);
 router.post('/auth/send-otp', AuthController.sendOtp);
 router.post('/auth/verify-otp', AuthController.verifyOtp);
 router.post('/auth/register-teacher', AuthController.registerTeacher);
-router.post('/auth/update-principal-credentials', AuthController.updatePrincipalCredentials);
+router.post('/auth/update-principal-credentials', authenticateJWT, authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AuthController.updatePrincipalCredentials);
 router.post('/auth/refresh', AuthController.refresh);
 router.get('/auth/me', authenticateJWT, AuthController.me);
 
+// Default-deny anonymous access for every route declared below this point.
+router.use(authenticateJWT);
+
 // Administrator User Approvals
-router.get('/admin/pending-users', AuthController.getPendingUsers);
-router.put('/admin/approve-user/:id', AuthController.approveUser);
-router.put('/admin/reject-user/:id', AuthController.rejectUser);
+router.get('/admin/pending-users', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AuthController.getPendingUsers);
+router.put('/admin/approve-user/:id', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AuthController.approveUser);
+router.put('/admin/reject-user/:id', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AuthController.rejectUser);
 
 // Timetable Routes
 router.get('/timetable', TimetableController.getTimetable);
-router.post('/timetable', TimetableController.saveSlot);
-router.post('/timetable/bulk', TimetableController.bulkSave);
+router.post('/timetable', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), TimetableController.saveSlot);
+router.post('/timetable/bulk', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), TimetableController.bulkSave);
 
 // ==========================================
 // 2. Principal Dashboard
@@ -88,9 +91,9 @@ router.put(
   StudentController.update
 );
 
-router.put('/students/:id/roll-no', StudentController.updateRollNo);
-router.delete('/students/:id', StudentController.delete);
-router.post('/students/clear-all', StudentController.clearAll);
+router.put('/students/:id/roll-no', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), StudentController.updateRollNo);
+router.delete('/students/:id', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), StudentController.delete);
+router.post('/students/clear-all', authorizeRoles(Role.PRINCIPAL), StudentController.clearAll);
 
 router.post(
   '/students/promote',
@@ -117,8 +120,8 @@ router.get(
   FeeController.getStructures
 );
 
-router.get('/fees/invoices', FeeController.getInvoices);
-router.post('/fees/create-receipt', FeeController.createReceipt);
+router.get('/fees/invoices', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT), FeeController.getInvoices);
+router.post('/fees/create-receipt', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT), FeeController.createReceipt);
 
 router.post(
   '/fees/generate-invoices',
@@ -151,7 +154,7 @@ router.post(
   FeeController.verifyRazorpay
 );
 
-router.get('/fees/receipt/:receiptId/pdf', FeeController.downloadReceipt);
+router.get('/fees/receipt/:receiptId/pdf', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT), FeeController.downloadReceipt);
 
 router.get(
   '/fees/analytics',
@@ -227,7 +230,7 @@ router.post(
   ExamController.enterMarks
 );
 
-router.get('/exams/marks', ExamController.getMarks);
+router.get('/exams/marks', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), ExamController.getMarks);
 
 router.post(
   '/exams/generate-reports',
@@ -237,7 +240,7 @@ router.post(
   ExamController.generateReportCards
 );
 
-router.get('/exams/report-card/:reportCardId/pdf', ExamController.downloadReportCard);
+router.get('/exams/report-card/:reportCardId/pdf', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), ExamController.downloadReportCard);
 
 // ==========================================
 // 7. Parent Portal Routes
