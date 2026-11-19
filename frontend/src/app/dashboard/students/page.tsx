@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
@@ -104,7 +106,7 @@ export default function StudentsPage() {
   useEffect(() => {
     async function loadStudents() {
       try {
-        const res = await fetch('/api/v1/students');
+        const res = await authenticatedFetch('/api/v1/students');
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setStudents(
@@ -134,7 +136,7 @@ export default function StudentsPage() {
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
     if (!window.confirm(`Are you sure you want to remove student "${studentName}"?`)) return;
     try {
-      const res = await fetch(`/api/v1/students/${studentId}`, {
+      const res = await authenticatedFetch(`/api/v1/students/${studentId}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -151,7 +153,7 @@ export default function StudentsPage() {
   const handleClearAllStudents = async () => {
     if (!window.confirm('Are you sure you want to remove all students? This will wipe all test records.')) return;
     try {
-      const res = await fetch('/api/v1/students/clear-all', {
+      const res = await authenticatedFetch('/api/v1/students/clear-all', {
         method: 'POST',
       });
       const data = await res.json();
@@ -169,7 +171,7 @@ export default function StudentsPage() {
   const handleSaveRollNo = async (studentId: string, studentName: string) => {
     if (!tempRoll.trim()) return;
     try {
-      const res = await fetch(`/api/v1/students/${studentId}/roll-no`, {
+      const res = await authenticatedFetch(`/api/v1/students/${studentId}/roll-no`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rollNumber: tempRoll.trim() }),
@@ -211,7 +213,7 @@ export default function StudentsPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/v1/students/admission', {
+      const res = await authenticatedFetch('/api/v1/students/admission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -419,7 +421,7 @@ export default function StudentsPage() {
         phone: r.phone.trim() || '+91-9876543210',
       }));
 
-      const res = await fetch('/api/v1/students/bulk-upload', {
+      const res = await authenticatedFetch('/api/v1/students/bulk-upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ students: payload }),
@@ -481,7 +483,7 @@ export default function StudentsPage() {
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/v1/students/bulk-upload', {
+      const res = await authenticatedFetch('/api/v1/students/bulk-upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ students: parsedBulkStudents }),
