@@ -3,7 +3,10 @@ import { hashPassword } from '../utils/password';
 import { Role, Gender, StudentStatus, AttendanceStatus, FeeFrequency, InvoiceStatus, PaymentMode, PaymentStatus, ExamTerm } from '@prisma/client';
 
 export async function main() {
-  console.log('🌱 Starting Database Seeding for A. P PUBLIC SCHOOL, Jhansi...');
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Database seeding is disabled in production. Use the reviewed tenant onboarding workflow instead.');
+  }
+  console.log('🌱 Starting development/test database seeding for A. P PUBLIC SCHOOL, Jhansi...');
 
   // 1. School Settings
   const schoolSetting = await prisma.schoolSetting.upsert({
