@@ -6,52 +6,35 @@ import datastore from '../utils/datastore';
 import { WhatsAppService } from './whatsapp.service';
 
 // Resilient In-Memory Fallback Seed Users for instant connection when DB is offline
+const PRINCIPAL_USER_BASE = {
+  id: 'user-principal-001',
+  userId: 'APPS-PRINCIPAL-01',
+  name: 'Dr. R. K. Sharma (Principal)',
+  email: 'principal@appublicschool.edu.in',
+  phone: '+91-7348011701',
+  role: Role.PRINCIPAL,
+  passwords: ['Admin@2026'],
+  avatarUrl: null,
+};
+
 const FALLBACK_USERS: Record<string, any> = {
-  'principal@appublicschool.edu.in': {
-    id: 'user-principal-001',
-    name: 'Dr. R. K. Sharma (Principal)',
-    email: 'principal@appublicschool.edu.in',
-    phone: '+91-7348011701',
-    role: Role.PRINCIPAL,
-    passwords: ['Admin@2026'],
-    avatarUrl: null,
-  },
-  'principal@appsjhansi.edu.in': {
-    id: 'user-principal-001',
-    name: 'Dr. R. K. Sharma (Principal)',
-    email: 'principal@appsjhansi.edu.in',
-    phone: '+91-7348011701',
-    role: Role.PRINCIPAL,
-    passwords: ['Admin@2026'],
-    avatarUrl: null,
-  },
-  '7348011701': {
-    id: 'user-principal-001',
-    name: 'Dr. R. K. Sharma (Principal)',
-    email: 'principal@appublicschool.edu.in',
-    phone: '+91-7348011701',
-    role: Role.PRINCIPAL,
-    passwords: ['Admin@2026'],
-    avatarUrl: null,
-  },
-  '+917348011701': {
-    id: 'user-principal-001',
-    name: 'Dr. R. K. Sharma (Principal)',
-    email: 'principal@appublicschool.edu.in',
-    phone: '+91-7348011701',
-    role: Role.PRINCIPAL,
-    passwords: ['Admin@2026'],
-    avatarUrl: null,
-  },
-  '917348011701': {
-    id: 'user-principal-001',
-    name: 'Dr. R. K. Sharma (Principal)',
-    email: 'principal@appublicschool.edu.in',
-    phone: '+91-7348011701',
-    role: Role.PRINCIPAL,
-    passwords: ['Admin@2026'],
-    avatarUrl: null,
-  },
+  // Principal User IDs
+  'admin': PRINCIPAL_USER_BASE,
+  'principal': PRINCIPAL_USER_BASE,
+  'apps-principal': PRINCIPAL_USER_BASE,
+  'apps-principal-01': PRINCIPAL_USER_BASE,
+  'prin-001': PRINCIPAL_USER_BASE,
+  'admin-001': PRINCIPAL_USER_BASE,
+  'user-principal-001': PRINCIPAL_USER_BASE,
+  // Principal Phones & Emails
+  'principal@appublicschool.edu.in': PRINCIPAL_USER_BASE,
+  'principal@appsjhansi.edu.in': PRINCIPAL_USER_BASE,
+  '7348011701': PRINCIPAL_USER_BASE,
+  '+917348011701': PRINCIPAL_USER_BASE,
+  '917348011701': PRINCIPAL_USER_BASE,
+  '6306262479': PRINCIPAL_USER_BASE,
+  '+916306262479': PRINCIPAL_USER_BASE,
+  '916306262479': PRINCIPAL_USER_BASE,
   'parent.sharma@example.com': {
     id: 'user-parent-001',
     name: 'Manoj Sharma',
@@ -297,6 +280,7 @@ export class AuthService {
         refreshToken: generateRefreshToken(payload),
         user: {
           id: fallbackUser.id,
+          userId: fallbackUser.userId || 'APPS-PRINCIPAL-01',
           name: fallbackUser.name,
           email: fallbackUser.email,
           phone: fallbackUser.phone,
@@ -412,14 +396,21 @@ export class AuthService {
     currentEmailOrPhone: string;
     newEmail?: string;
     newPassword?: string;
+    newUserId?: string;
     otp?: string;
   }) {
-    if (!data.newEmail && !data.newPassword) {
-      throw { status: 400, message: 'Please provide either a new Email or a new Password to update.' };
+    if (!data.newEmail && !data.newPassword && !data.newUserId) {
+      throw { status: 400, message: 'Please provide either a new User ID, Email, or Password to update.' };
     }
 
     const principalKeys = ['principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in', '917348011701', '7348011701', '+91-7348011701', '916306262479'];
-    let target = FALLBACK_USERS['principal@appublicschool.edu.in'];
+    let target = FALLBACK_USERS['principal@appublicschool.edu.in'] || PRINCIPAL_USER_BASE;
+
+    if (data.newUserId) {
+      const cleanUserId = data.newUserId.toLowerCase().trim();
+      target.userId = data.newUserId.trim();
+      FALLBACK_USERS[cleanUserId] = target;
+    }
 
     if (data.newEmail) {
       const cleanEmail = data.newEmail.toLowerCase().trim();

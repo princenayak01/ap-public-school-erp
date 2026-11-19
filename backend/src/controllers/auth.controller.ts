@@ -74,11 +74,12 @@ export class AuthController {
 
   static async updatePrincipalCredentials(req: Request, res: Response, next: NextFunction) {
     try {
-      const { currentEmailOrPhone, newEmail, newPassword, otp } = req.body;
+      const { currentEmailOrPhone, newEmail, newPassword, newUserId, otp } = req.body;
       const result = await AuthService.updatePrincipalCredentials({
         currentEmailOrPhone,
         newEmail,
         newPassword,
+        newUserId,
         otp,
       });
       return res.status(200).json(result);

@@ -128,8 +128,13 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
               <span>{currentUser?.name || (role === 'TEACHER' ? 'Sunita Sharma' : role === 'PARENT' ? 'Vikas Sharma' : 'Dr. R. K. Sharma')}</span>
               {role === 'PRINCIPAL' && <UserCog className="w-3 h-3 text-indigo-600 inline" />}
             </div>
-            <div className="text-[10px] text-slate-500 font-semibold">
-              {role === 'TEACHER' ? 'Class Incharge' : role === 'PARENT' ? 'Guardian' : 'Super Administrator'}
+            <div className="text-[10px] text-slate-500 font-semibold flex items-center space-x-1.5">
+              <span>{role === 'TEACHER' ? 'Class Incharge' : role === 'PARENT' ? 'Guardian' : 'Super Administrator'}</span>
+              {role === 'PRINCIPAL' && (
+                <span className="font-mono text-[9px] bg-indigo-50 text-indigo-700 px-1 py-0.2 rounded border border-indigo-200">
+                  ID: {currentUser?.userId || currentUser?.id || 'APPS-PRINCIPAL-01'}
+                </span>
+              )}
             </div>
           </div>
         </div>

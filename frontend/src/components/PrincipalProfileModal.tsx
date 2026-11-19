@@ -13,6 +13,7 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
   onProfileUpdated,
 }) => {
   const [name, setName] = useState('Dr. R. K. Sharma (Principal)');
+  const [userId, setUserId] = useState('APPS-PRINCIPAL-01');
   const [email, setEmail] = useState('principal@appublicschool.edu.in');
   const [phone, setPhone] = useState('7348011701');
   const [password, setPassword] = useState('');
@@ -25,6 +26,8 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
       if (stored) {
         const u = JSON.parse(stored);
         if (u.name) setName(u.name);
+        if (u.userId) setUserId(u.userId);
+        else if (u.id) setUserId(u.id);
         if (u.email) setEmail(u.email);
         if (u.phone) setPhone(u.phone.replace(/[^0-9]/g, ''));
       }
@@ -39,7 +42,7 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
     setNotice('');
 
     try {
-      // Update backend credentials if email or password changed
+      // Update backend credentials if email, userId or password changed
       await fetch('/api/v1/auth/update-principal-credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,18 +50,21 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
           currentEmailOrPhone: phone,
           newEmail: email.trim(),
           newPassword: password.trim() || undefined,
+          newUserId: userId.trim() || undefined,
         }),
       });
 
       // Update local storage representation
       const updatedUser = {
         name,
+        userId: userId.trim(),
         email,
         phone,
         role: 'PRINCIPAL',
+        savedPassword: password.trim() || undefined,
       };
       localStorage.setItem('apps_user', JSON.stringify(updatedUser));
-      setNotice('Principal Profile updated successfully!');
+      setNotice('Principal Profile & User ID updated successfully!');
       if (onProfileUpdated) onProfileUpdated(updatedUser);
       setTimeout(() => {
         onClose();
@@ -108,6 +114,21 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
               required
               className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-800 font-semibold focus:outline-hidden focus:border-indigo-600"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Master User ID (Login Username)
+            </label>
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              required
+              className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-300 text-xs text-indigo-900 font-mono font-bold focus:outline-hidden focus:border-indigo-600"
+              placeholder="e.g. admin or APPS-PRINCIPAL-01"
+            />
+            <p className="text-[10px] text-slate-500 mt-1">Aap is User ID ka upyog karke bhi direct login kar sakte hain.</p>
           </div>
 
           <div>

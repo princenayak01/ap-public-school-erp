@@ -44,15 +44,32 @@ export default function PrincipalLoginPage() {
         setError(data.message || 'Galat Administrator Credentials. Kripya check karein.');
       }
     } catch (err: any) {
-      // Strict fallback for Principal login only with exact authorized credentials
+      // Strict fallback for Principal login with authorized User ID, Phone, or Email
       const idClean = identifier.trim().toLowerCase().replace(/[\s-]/g, '');
-      const validIdentifiers = ['7348011701', '+917348011701', '917348011701', 'principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in'];
+      const validIdentifiers = [
+        'admin',
+        'principal',
+        'apps-principal',
+        'apps-principal-01',
+        'prin-001',
+        'admin-001',
+        'user-principal-001',
+        '7348011701',
+        '+917348011701',
+        '917348011701',
+        '6306262479',
+        '+916306262479',
+        '916306262479',
+        'principal@appublicschool.edu.in',
+        'principal@appsjhansi.edu.in',
+      ];
       const validPasswords = ['Admin@2026'];
 
       try {
         const localUser = localStorage.getItem('apps_user');
         if (localUser) {
           const parsed = JSON.parse(localUser);
+          if (parsed.userId) validIdentifiers.push(parsed.userId.toLowerCase().trim());
           if (parsed.savedPassword) validPasswords.push(parsed.savedPassword);
         }
       } catch (e) {}
@@ -60,6 +77,7 @@ export default function PrincipalLoginPage() {
       if (validIdentifiers.includes(idClean) && validPasswords.includes(password.trim())) {
         const fallbackUser = {
           id: 'user-principal-001',
+          userId: idClean === 'admin' || idClean === 'principal' ? idClean.toUpperCase() : 'APPS-PRINCIPAL-01',
           name: 'Dr. R. K. Sharma (Principal)',
           email: identifier.includes('@') ? identifier : 'principal@appublicschool.edu.in',
           phone: '+91-7348011701',
@@ -71,7 +89,7 @@ export default function PrincipalLoginPage() {
         router.push('/dashboard/principal');
         return;
       }
-      setError('Galat Administrator Credentials. Kripya authorized ID aur Password dalein.');
+      setError('Galat Administrator Credentials. Kripya authorized User ID / Mobile aur Password dalein.');
     } finally {
       setLoading(false);
     }
@@ -113,7 +131,7 @@ export default function PrincipalLoginPage() {
         <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-              Registered Mobile Number or Email
+              Principal User ID / Mobile / Email
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -124,7 +142,7 @@ export default function PrincipalLoginPage() {
                 required
                 autoComplete="off"
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500 font-mono"
-                placeholder="7348011701 or email"
+                placeholder="User ID (e.g. admin, principal, 7348011701)"
               />
             </div>
           </div>

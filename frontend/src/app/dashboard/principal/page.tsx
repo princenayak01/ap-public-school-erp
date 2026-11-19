@@ -32,6 +32,7 @@ export default function PrincipalDashboard() {
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
   const [approvalMsg, setApprovalMsg] = useState('');
   const [activeRole, setActiveRole] = useState<'TEACHER' | 'PARENT' | 'PRINCIPAL'>('PRINCIPAL');
+  const [principalUser, setPrincipalUser] = useState<any>(null);
 
   const loadPendingUsers = async () => {
     try {
@@ -59,6 +60,7 @@ export default function PrincipalDashboard() {
         return;
       }
       setActiveRole('PRINCIPAL');
+      setPrincipalUser(u);
     } catch (e) {
       window.location.replace('/login/principal');
       return;
@@ -159,9 +161,12 @@ export default function PrincipalDashboard() {
             <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <div className="flex items-center space-x-2 mb-1.5">
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
                     Academic Session 2026–27
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-500/40">
+                    User ID: {principalUser?.userId || principalUser?.id || 'APPS-PRINCIPAL-01'}
                   </span>
                   <span className="text-xs text-slate-400">CBSE Affiliation: 2130000</span>
                 </div>
