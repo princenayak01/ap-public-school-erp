@@ -1,4 +1,4 @@
-name: Upgrade vulnerable Next.js dependencies (PostCSS override retry)
+name: Upgrade vulnerable Next.js dependencies (commit retry)
 
 on:
   push:
