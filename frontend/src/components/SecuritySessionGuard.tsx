@@ -100,17 +100,7 @@ export default function SecuritySessionGuard({ children }: { children: React.Rea
     setAuthorized(true);
     setChecking(false);
 
-    // 3. Back-Button Navigation Security Trap
-    window.history.pushState({ protected: true }, '', window.location.href);
-
-    const onPopState = () => {
-      console.warn('[SECURITY GUARD] Back button intercepted. Terminating session for security...');
-      wipeAndRedirect('/login');
-    };
-
-    window.addEventListener('popstate', onPopState);
-
-    // 4. Inactivity Auto-Logout Timer (15 Minutes)
+    // Inactivity Auto-Logout Timer (15 Minutes of idle time)
     let inactivityTimer: NodeJS.Timeout;
     const resetTimer = () => {
       clearTimeout(inactivityTimer);
@@ -124,7 +114,7 @@ export default function SecuritySessionGuard({ children }: { children: React.Rea
     activityEvents.forEach((ev) => window.addEventListener(ev, resetTimer));
     resetTimer();
 
-    // 5. Cross-Tab Logout Synchronization
+    // Cross-Tab Logout Synchronization
     const onStorageChange = (e: StorageEvent) => {
       if (e.key === 'apps_token' && !e.newValue) {
         wipeAndRedirect('/login');
@@ -133,7 +123,6 @@ export default function SecuritySessionGuard({ children }: { children: React.Rea
     window.addEventListener('storage', onStorageChange);
 
     return () => {
-      window.removeEventListener('popstate', onPopState);
       clearTimeout(inactivityTimer);
       activityEvents.forEach((ev) => window.removeEventListener(ev, resetTimer));
       window.removeEventListener('storage', onStorageChange);
