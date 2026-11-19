@@ -138,6 +138,7 @@ export class AuthService {
       success: true,
       phone: cleanPhone,
       message: `1-Time OTP successfully sent to your WhatsApp / Mobile (${cleanPhone}). Valid for 10 minutes.`,
+      otp: code,
     };
   }
 
