@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { FeeService } from '../services/fee.service';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-import { createFeeStructureSchema } from '../validations/fee.validation';
+import { createFeeStructureSchema, recordFeePaymentSchema } from '../validations/fee.validation';
 
 const notReady = (res: Response, operation: string) =>
   res.status(501).json({
@@ -45,13 +45,13 @@ export class FeeController {
 
   static async pay(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { invoiceId, amountPaid, paymentMode } = req.body;
+      const validated = recordFeePaymentSchema.parse(req.body);
       const payment = await FeeService.recordPayment(
-        invoiceId,
-        amountPaid,
-        paymentMode || 'CASH',
+        validated.invoiceId,
+        validated.amountPaid,
+        validated.paymentMode,
         req.user?.userId,
-        req.body.notes
+        validated.notes
       );
       return res.status(201).json({
         success: true,
