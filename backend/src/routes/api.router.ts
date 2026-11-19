@@ -9,6 +9,7 @@ import { ParentController } from '../controllers/parent.controller';
 import { AIController } from '../controllers/ai.controller';
 import { TimetableController } from '../controllers/timetable.controller';
 import { authenticateJWT, authorizeRoles } from '../middleware/auth.middleware';
+import { requireDatabase } from '../middleware/database.middleware';
 import { recordAuditLog } from '../middleware/audit.middleware';
 import { Role } from '@prisma/client';
 import prisma from '../prisma/client';
@@ -29,6 +30,7 @@ router.get('/auth/me', authenticateJWT, AuthController.me);
 
 // Default-deny anonymous access for every route declared below this point.
 router.use(authenticateJWT);
+router.use(requireDatabase);
 
 // Administrator User Approvals
 router.get('/admin/pending-users', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AuthController.getPendingUsers);
