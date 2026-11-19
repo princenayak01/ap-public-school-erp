@@ -42,7 +42,7 @@ jobs:
         run: npm ci
 
       - name: Audit dependency vulnerabilities
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=low
 
       - name: Validate Prisma schema
         run: npx prisma validate
@@ -73,7 +73,7 @@ jobs:
         run: npm ci
 
       - name: Audit frontend dependencies
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=low
 
       - name: Build frontend
         run: npm run build
