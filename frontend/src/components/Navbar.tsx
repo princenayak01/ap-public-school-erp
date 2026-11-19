@@ -84,6 +84,19 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
           <span>{role === 'TEACHER' ? '👩‍🏫 Teacher Account' : role === 'PARENT' ? '👨‍👩‍👧 Parent Account' : '👑 Principal Admin'}</span>
         </span>
 
+        {/* Principal Edit Profile Button */}
+        {role === 'PRINCIPAL' && (
+          <button
+            type="button"
+            onClick={() => setShowProfileModal(true)}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition-all cursor-pointer shadow-xs"
+            title="Edit Principal Profile, Email & Password"
+          >
+            <UserCog className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Edit Profile</span>
+          </button>
+        )}
+
         {/* User Profile Pill */}
         <div
           onClick={() => {
