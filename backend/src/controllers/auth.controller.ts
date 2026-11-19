@@ -93,29 +93,19 @@ export class AuthController {
 
   static async approveUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.params.id;
-      const approved = await AuthService.approveUser(userId);
-      return res.status(200).json({
-        success: true,
-        message: `Account for ${approved.name} (${approved.role}) has been APPROVED by Administrator.`,
-        data: approved,
-      });
-    } catch (err: any) {
-      return res.status(400).json({ success: false, message: err.message || 'Approval failed' });
+      await AuthService.approveUser(req.params.id);
+      return res.status(501).json({ success: false, message: 'Tenant-scoped user approval is not implemented yet.' });
+    } catch (err) {
+      return next(err);
     }
   }
 
   static async rejectUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.params.id;
-      const rejected = await AuthService.rejectUser(userId);
-      return res.status(200).json({
-        success: true,
-        message: `Account registration for ${rejected.name} has been REJECTED by Administrator.`,
-        data: rejected,
-      });
-    } catch (err: any) {
-      return res.status(400).json({ success: false, message: err.message || 'Rejection failed' });
+      await AuthService.rejectUser(req.params.id);
+      return res.status(501).json({ success: false, message: 'Tenant-scoped user approval is not implemented yet.' });
+    } catch (err) {
+      return next(err);
     }
   }
 
