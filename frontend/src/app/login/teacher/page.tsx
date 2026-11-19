@@ -161,21 +161,11 @@ export default function TeacherLoginPage() {
           </button>
         </form>
 
-        {/* Allowed Access Notice */}
-        <div className="mt-5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-          <p className="font-bold text-amber-400 flex items-center space-x-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Teacher Access Permissions:</span>
-          </p>
-          <p>✓ Add Students & Roll Numbers • Daily Attendance • Class Timetable • Manual Marks & Report Card</p>
-          <p className="text-slate-500">✗ Fees & Financial Settings are strictly hidden from Teachers.</p>
-        </div>
-
         <div className="mt-5 pt-4 border-t border-slate-800 text-center space-y-2">
           <p className="text-xs text-slate-400">
             Naye Teacher hain?{' '}
             <Link href="/register" className="text-amber-400 font-bold hover:underline">
-              1-Time OTP se Register karein
+              Register karein
             </Link>
           </p>
 

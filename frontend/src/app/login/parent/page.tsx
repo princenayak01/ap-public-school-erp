@@ -135,16 +135,6 @@ export default function ParentLoginPage() {
           </button>
         </form>
 
-        {/* Parent Access Features Notice */}
-        <div className="mt-5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-          <p className="font-bold text-teal-400 flex items-center space-x-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Parent Access Capabilities:</span>
-          </p>
-          <p>✓ View Child&apos;s Live Attendance • View & Pay Fees (Razorpay) • Download CBSE Report Card</p>
-          <p className="text-slate-500">🔒 Strictly view-only. Cannot edit attendance or exam marks.</p>
-        </div>
-
         <div className="mt-5 pt-4 border-t border-slate-800 text-center space-y-2">
           <p className="text-xs text-slate-400">
             School Admission ke baad account nahi mila?{' '}

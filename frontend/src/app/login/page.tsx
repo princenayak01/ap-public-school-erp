@@ -129,7 +129,7 @@ export default function UnifiedLoginDirectory() {
           <div>
             Need to register a new account?{' '}
             <Link href="/register" className="text-teal-400 font-bold hover:underline">
-              Teacher & Ward Registration (with 1-Time OTP)
+              Teacher & Ward Registration Online
             </Link>
           </div>
           <div>
