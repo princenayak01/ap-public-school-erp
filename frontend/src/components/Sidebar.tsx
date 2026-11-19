@@ -140,28 +140,31 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
   const renderNavContent = () => (
     <div className="flex flex-col justify-between h-full">
       <div>
-        {/* School Brand Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
-          <div className="flex items-center space-x-3">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-white flex items-center justify-center p-1 border border-amber-400/80 shadow-md shrink-0">
+        {/* School Brand Header - Full Block Official Emblem */}
+        <div className="p-3 border-b border-slate-800 bg-slate-950">
+          <div className="relative">
+            <div className="w-full rounded-2xl bg-black border border-amber-500/40 p-2 shadow-xl shadow-amber-500/10 flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="A. P. Public School Crest" className="w-full h-full object-contain" />
+              <img
+                src="/logo.png"
+                alt="A. P. Public School Crest"
+                className="w-full max-h-24 object-contain mx-auto"
+              />
             </div>
-            <div>
-              <h1 className="font-black text-xs sm:text-sm tracking-tight text-white leading-tight uppercase">
-                A. P. PUBLIC SCHOOL
-              </h1>
-              <p className="text-[10px] sm:text-[11px] text-amber-400 font-bold">Baruasagar • Jhansi (CBSE)</p>
-            </div>
+            {/* Close button for mobile drawer */}
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="md:hidden absolute top-2 right-2 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80"
+              title="Close Menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-
-          {/* Close button for mobile drawer */}
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="mt-2 text-center">
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+              CBSE Affiliated • Baruasagar, Jhansi
+            </span>
+          </div>
         </div>
 
         {/* Authenticated Account Badge */}

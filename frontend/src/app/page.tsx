@@ -44,9 +44,9 @@ export default function LandingPage() {
       {/* Top Navigation */}
       <nav className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-xl sticky top-0 z-50 px-3.5 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2.5 sm:space-x-3.5">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl overflow-hidden bg-white/10 p-0.5 flex items-center justify-center shadow-xl shadow-amber-500/10 ring-2 ring-amber-400/30 flex-shrink-0">
+          <div className="h-10 sm:h-12 px-2 rounded-xl overflow-hidden bg-black p-0.5 flex items-center justify-center shadow-xl shadow-amber-500/10 border border-amber-400/80 flex-shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="A. P Public School Logo" className="w-full h-full object-contain" />
+            <img src="/logo.png" alt="A. P Public School Logo" className="h-full w-auto object-contain" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center space-x-1.5 sm:space-x-2">
@@ -79,9 +79,9 @@ export default function LandingPage() {
       {/* Hero Section with Graphic Header */}
       <section className="pt-12 pb-12 px-6 max-w-6xl mx-auto text-center relative z-10">
         <div className="flex justify-center mb-6">
-          <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden bg-slate-900/90 p-2 border-2 border-amber-500/40 shadow-2xl shadow-amber-500/20 backdrop-blur-xl transform hover:scale-105 transition-transform duration-300">
+          <div className="w-full max-w-[280px] sm:max-w-[360px] rounded-3xl bg-black border-2 border-amber-500/40 p-3.5 shadow-2xl shadow-amber-500/20 backdrop-blur-xl transform hover:scale-105 transition-transform duration-300 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="A. P. Public School Official Crest" className="w-full h-full object-contain filter drop-shadow" />
+            <img src="/logo.png" alt="A. P. Public School Official Crest" className="w-full h-auto max-h-40 sm:max-h-48 object-contain filter drop-shadow" />
           </div>
         </div>
 

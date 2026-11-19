@@ -61,19 +61,19 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-white p-0.5 border border-amber-300 shadow-sm shrink-0 flex items-center justify-center">
+        <div className="h-10 sm:h-11 px-1.5 rounded-xl overflow-hidden bg-black border border-amber-400/80 shadow-sm shrink-0 flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-full object-contain" />
+          <img src="/logo.png" alt="A. P. Public School Logo" className="h-full w-auto object-contain" />
         </div>
         <div className="min-w-0">
-          <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight truncate leading-tight">{title}</h2>
+          <h2 className="text-xs sm:text-sm md:text-base font-extrabold text-slate-900 tracking-tight truncate leading-tight">{title}</h2>
           <p className="text-[10px] sm:text-[11px] text-amber-700 font-bold truncate">A. P. PUBLIC SCHOOL • Baruasagar, Jhansi</p>
         </div>
       </div>
 
       <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
-        {/* Live Date & Time Widget (Desktop Only) */}
-        <div className="hidden lg:flex items-center space-x-3 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 font-medium">
+        {/* Live Date & Time Widget (Large Screens Only) */}
+        <div className="hidden xl:flex items-center space-x-3 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 font-medium">
           <div className="flex items-center space-x-1.5">
             <Calendar className="w-3.5 h-3.5 text-indigo-600" />
             <span>{dateStr || 'Wednesday, 18 Nov 2026'}</span>

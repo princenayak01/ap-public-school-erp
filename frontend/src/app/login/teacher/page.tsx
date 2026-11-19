@@ -83,9 +83,9 @@ export default function TeacherLoginPage() {
       <div className="w-full max-w-sm sm:max-w-md bg-slate-900/95 backdrop-blur-xl border border-amber-500/30 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-5 sm:mb-6">
-          <div className="w-16 h-16 sm:w-18 sm:h-18 mx-auto rounded-2xl sm:rounded-3xl overflow-hidden bg-white/10 p-1 flex items-center justify-center shadow-lg shadow-amber-500/20 mb-2.5 sm:mb-3 ring-2 ring-amber-400/40">
+          <div className="w-full max-w-[220px] sm:max-w-[260px] mx-auto rounded-2xl bg-black border border-amber-500/40 p-2.5 shadow-xl shadow-amber-500/20 mb-3 ring-1 ring-amber-400/30 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-full object-contain" />
+            <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-auto max-h-28 sm:max-h-32 object-contain" />
           </div>
           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
             Faculty & Class Incharge Portal

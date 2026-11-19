@@ -157,28 +157,40 @@ export default function PrincipalDashboard() {
 
         <main className="p-3.5 sm:p-6 pb-24 md:pb-8 space-y-4 sm:space-y-6 overflow-y-auto">
           {/* Welcome Banner */}
-          <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 relative overflow-hidden shadow-xl border border-slate-800">
+          <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-6 relative overflow-hidden shadow-xl border border-slate-800">
             <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                    Academic Session 2026–27
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-500/40">
-                    User ID: {principalUser?.userId || principalUser?.id || 'APPS-PRINCIPAL-01'}
-                  </span>
-                  <span className="text-xs text-slate-400">CBSE Affiliation: 2130000</span>
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                {/* Official School Emblem Block */}
+                <div className="w-full sm:w-auto shrink-0 flex items-center justify-center p-2 rounded-2xl bg-black border border-amber-500/40 shadow-xl shadow-amber-500/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/logo.png"
+                    alt="A. P. Public School Crest"
+                    className="w-36 sm:w-44 h-auto max-h-24 sm:max-h-28 object-contain"
+                  />
                 </div>
-                <h1 className="text-2xl font-black tracking-tight text-white">
-                  Welcome to A. P PUBLIC SCHOOL, Principal Sharma 👋
-                </h1>
-                <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-                  Overview of school operations, registration approvals, attendance statistics, fee collections, and student management.
-                </p>
+
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                      Academic Session 2026–27
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-500/40">
+                      User ID: {principalUser?.userId || principalUser?.id || 'APPS-PRINCIPAL-01'}
+                    </span>
+                    <span className="text-xs text-slate-400">CBSE Affiliation: 2130000</span>
+                  </div>
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                    Welcome to A. P. PUBLIC SCHOOL, Principal Sharma 👋
+                  </h1>
+                  <p className="text-xs text-slate-300 mt-1 max-w-xl">
+                    Overview of school operations, registration approvals, attendance statistics, fee collections, and student management.
+                  </p>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-2.5">
+              <div className="flex flex-wrap gap-2.5 shrink-0">
                 <a
                   href="/dashboard/students"
                   className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold flex items-center space-x-1.5 shadow-md shadow-teal-600/20 transition-all"
