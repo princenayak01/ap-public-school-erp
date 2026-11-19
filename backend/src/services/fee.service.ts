@@ -202,7 +202,7 @@ export class FeeService {
       .digest('hex');
 
     // In production or test environment:
-    const isValid = config.env === 'development' || expectedSignature === razorpaySignature;
+    const isValid = expectedSignature === razorpaySignature;
     if (!isValid) {
       throw { status: 400, message: 'Payment verification failed. Invalid digital signature.' };
     }
