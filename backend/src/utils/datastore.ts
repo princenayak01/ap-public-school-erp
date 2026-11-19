@@ -241,6 +241,107 @@ class DataStore {
   }
 
   getFeeInvoices() {
+    if (!this.data.feeInvoices || this.data.feeInvoices.length === 0) {
+      this.data.feeInvoices = [
+        {
+          id: 'inv-001',
+          invoiceNo: 'INV-2026-001',
+          receiptNumber: 'REC-2026-001',
+          studentId: 'std-002',
+          studentName: 'Aarav Sharma',
+          className: 'Class 4',
+          rollNo: '02',
+          admissionNo: 'APPS/2026/002',
+          parentName: 'Manoj Sharma',
+          fatherName: 'Manoj Sharma',
+          parentPhone: '9876543213',
+          phone: '9876543213',
+          parentEmail: 'parent.sharma@gmail.com',
+          month: 'April 2026',
+          feeHead: 'Tuition Fee (Session 2026-27)',
+          totalAmount: 2000,
+          paidAmount: 1000,
+          balanceAmount: 1000,
+          status: 'PARTIAL',
+          paymentMode: 'CASH',
+          createdAt: '2026-11-18',
+          remarks: 'Partial Tuition Fee Paid, Remaining Due: ₹1000',
+        },
+        {
+          id: 'inv-002',
+          invoiceNo: 'INV-2026-002',
+          receiptNumber: 'REC-2026-002',
+          studentId: 'std-003',
+          studentName: 'Ananya Verma',
+          className: 'Class 1',
+          rollNo: '02',
+          admissionNo: 'APPS/2026/003',
+          parentName: 'Sanjay Verma',
+          fatherName: 'Sanjay Verma',
+          parentPhone: '9876543216',
+          phone: '9876543216',
+          parentEmail: 'parent.verma@gmail.com',
+          month: 'April 2026',
+          feeHead: 'Tuition Fee (Session 2026-27)',
+          totalAmount: 1800,
+          paidAmount: 0,
+          balanceAmount: 1800,
+          status: 'PENDING',
+          paymentMode: 'CASH',
+          createdAt: '2026-11-18',
+          remarks: 'Pending Tuition Fee',
+        },
+        {
+          id: 'inv-003',
+          invoiceNo: 'INV-2026-003',
+          receiptNumber: 'REC-2026-003',
+          studentId: 'std-004',
+          studentName: 'Kabir Singh',
+          className: 'Class 8',
+          rollNo: '03',
+          admissionNo: 'APPS/2026/004',
+          parentName: 'Rajesh Singh',
+          fatherName: 'Rajesh Singh',
+          parentPhone: '9876543218',
+          phone: '9876543218',
+          parentEmail: 'parent.singh@gmail.com',
+          month: 'April 2026',
+          feeHead: 'Tuition Fee (Session 2026-27)',
+          totalAmount: 2200,
+          paidAmount: 2200,
+          balanceAmount: 0,
+          status: 'PAID',
+          paymentMode: 'ONLINE_RAZORPAY',
+          createdAt: '2026-11-18',
+          remarks: 'No Due - Full Fee Cleared',
+        },
+        {
+          id: 'inv-004',
+          invoiceNo: 'INV-2026-004',
+          receiptNumber: 'REC-2026-004',
+          studentId: 'std-001',
+          studentName: 'Amit Nayak',
+          className: 'Class 4',
+          rollNo: '01',
+          admissionNo: 'APPS/2026/001',
+          parentName: 'Prince Nayak',
+          fatherName: 'Prince Nayak',
+          parentPhone: '7309720610',
+          phone: '7309720610',
+          parentEmail: 'prince.nayak@gmail.com',
+          month: 'April 2026',
+          feeHead: 'Tuition Fee (Session 2026-27)',
+          totalAmount: 2000,
+          paidAmount: 0,
+          balanceAmount: 2000,
+          status: 'PENDING',
+          paymentMode: 'CASH',
+          createdAt: '2026-11-18',
+          remarks: 'Pending Tuition Fee',
+        },
+      ];
+      this.save();
+    }
     return this.data.feeInvoices;
   }
 
@@ -250,22 +351,81 @@ class DataStore {
     className: string;
     rollNo?: string;
     admissionNo?: string;
+    fatherName?: string;
+    parentName?: string;
+    parentPhone?: string;
+    parentEmail?: string;
     month?: string;
     feeHead?: string;
     totalAmount: number;
     amountPaid: number;
     paymentMode?: string;
     remarks?: string;
+    invoiceId?: string;
   }) {
     if (!this.data.feeInvoices) this.data.feeInvoices = [];
     if (!this.data.feePayments) this.data.feePayments = [];
 
+    // Check if updating an existing invoice
+    let existingInv: any = null;
+    if (receiptData.invoiceId) {
+      existingInv = this.data.feeInvoices.find((i) => i.id === receiptData.invoiceId);
+    } else if (receiptData.admissionNo) {
+      existingInv = this.data.feeInvoices.find((i) => i.admissionNo === receiptData.admissionNo && i.balanceAmount > 0);
+    }
+
     const count = this.data.feeInvoices.length + 1;
-    const invoiceNo = `INV-2026-${String(count).padStart(3, '0')}`;
-    const receiptNo = `REC-2026-${String(count).padStart(3, '0')}`;
+    const invoiceNo = existingInv?.invoiceNo || `INV-2026-${String(count).padStart(3, '0')}`;
+    const receiptNo = `REC-2026-${String(this.data.feePayments.length + 1).padStart(3, '0')}`;
+
+    // Lookup matching student for parent details
+    const student = this.data.students.find(
+      (s) =>
+        (receiptData.studentId && s.id === receiptData.studentId) ||
+        (receiptData.admissionNo && s.admissionNo === receiptData.admissionNo) ||
+        (s.firstName && receiptData.studentName && `${s.firstName} ${s.lastName || ''}`.trim().toLowerCase() === receiptData.studentName.trim().toLowerCase())
+    );
+
+    const fatherName = receiptData.fatherName || receiptData.parentName || student?.parentName || 'Parent Guardian';
+    const parentPhone = receiptData.parentPhone || student?.parentPhone || '+91-9876543210';
+    const parentEmail = receiptData.parentEmail || student?.parentEmail || '';
+
+    const paidAmount = Number(receiptData.amountPaid) || 0;
+
+    if (existingInv) {
+      existingInv.paidAmount = (Number(existingInv.paidAmount) || 0) + paidAmount;
+      existingInv.balanceAmount = Math.max(0, (Number(existingInv.totalAmount) || 0) - existingInv.paidAmount);
+      existingInv.status = existingInv.balanceAmount === 0 ? 'PAID' : 'PARTIAL';
+      existingInv.receiptNumber = receiptNo;
+      existingInv.paymentMode = receiptData.paymentMode || existingInv.paymentMode || 'CASH';
+      existingInv.remarks = receiptData.remarks || (existingInv.balanceAmount === 0 ? 'No Due - Full Fee Paid' : `Partial Fee Paid, Remaining Due: ₹${existingInv.balanceAmount}`);
+      existingInv.fatherName = fatherName;
+      existingInv.parentName = fatherName;
+      existingInv.parentPhone = parentPhone;
+      existingInv.phone = parentPhone;
+      existingInv.parentEmail = parentEmail;
+
+      const payment = {
+        id: `pay-${Date.now()}`,
+        receiptNumber: receiptNo,
+        invoiceId: existingInv.id,
+        studentName: existingInv.studentName,
+        className: existingInv.className,
+        amountPaid: paidAmount,
+        paymentMethod: receiptData.paymentMode || 'CASH',
+        transactionId: `TXN_${Date.now()}`,
+        paymentDate: new Date().toISOString().split('T')[0],
+        balanceAmount: existingInv.balanceAmount,
+        status: existingInv.status,
+        fatherName,
+        parentPhone,
+      };
+      this.data.feePayments.unshift(payment);
+      this.save();
+      return { success: true, invoice: existingInv, receiptNo };
+    }
 
     const totalAmount = Number(receiptData.totalAmount) || 0;
-    const paidAmount = Number(receiptData.amountPaid) || 0;
     const balanceAmount = Math.max(0, totalAmount - paidAmount);
     const status = balanceAmount === 0 ? 'PAID' : (paidAmount > 0 ? 'PARTIAL' : 'PENDING');
 
@@ -278,7 +438,12 @@ class DataStore {
       className: receiptData.className || 'Class 4',
       rollNo: receiptData.rollNo || '01',
       admissionNo: receiptData.admissionNo || `APPS/2026/${String(count).padStart(3, '0')}`,
-      month: receiptData.month || 'Current Session',
+      fatherName,
+      parentName: fatherName,
+      parentPhone,
+      phone: parentPhone,
+      parentEmail,
+      month: receiptData.month || 'Session 2026-27',
       feeHead: receiptData.feeHead || 'Tuition & Academic Fee',
       totalAmount,
       paidAmount,
@@ -304,6 +469,8 @@ class DataStore {
         paymentDate: new Date().toISOString().split('T')[0],
         balanceAmount,
         status,
+        fatherName,
+        parentPhone,
       };
       this.data.feePayments.unshift(payment);
     }

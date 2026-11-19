@@ -70,15 +70,20 @@ export class FeeController {
         className,
         rollNo,
         admissionNo,
+        fatherName,
+        parentName,
+        parentPhone,
+        parentEmail,
         month,
         feeHead,
         totalAmount,
         amountPaid,
         paymentMode,
         remarks,
+        invoiceId,
       } = req.body;
 
-      if (!studentName || !totalAmount) {
+      if (!studentName || totalAmount === undefined) {
         return res.status(400).json({
           success: false,
           message: 'Student name and Total Amount are required.',
@@ -91,12 +96,17 @@ export class FeeController {
         className: className || 'Class 4',
         rollNo: rollNo || '01',
         admissionNo,
+        fatherName: fatherName || parentName,
+        parentName: parentName || fatherName,
+        parentPhone,
+        parentEmail,
         month: month || 'Session 2026-27',
         feeHead: feeHead || 'Tuition Fee',
         totalAmount: Number(totalAmount),
         amountPaid: Number(amountPaid) || 0,
         paymentMode: paymentMode || 'CASH',
         remarks,
+        invoiceId,
       });
 
       return res.status(201).json({

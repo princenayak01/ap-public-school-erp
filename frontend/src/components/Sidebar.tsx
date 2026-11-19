@@ -143,15 +143,15 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
         {/* School Brand Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center p-0.5 border border-amber-500/30 shadow-lg shrink-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-white flex items-center justify-center p-1 border border-amber-400/80 shadow-md shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="A. P. Public School Logo" className="w-full h-full object-contain" />
+              <img src="/logo.png" alt="A. P. Public School Crest" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h1 className="font-black text-xs tracking-tight text-white leading-tight uppercase">
+              <h1 className="font-black text-xs sm:text-sm tracking-tight text-white leading-tight uppercase">
                 A. P. PUBLIC SCHOOL
               </h1>
-              <p className="text-[10px] text-amber-400 font-semibold">Baruasagar • Jhansi (CBSE)</p>
+              <p className="text-[10px] sm:text-[11px] text-amber-400 font-bold">Baruasagar • Jhansi (CBSE)</p>
             </div>
           </div>
 
