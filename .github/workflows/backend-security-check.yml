@@ -53,6 +53,9 @@ jobs:
       - name: TypeScript build
         run: npm run build
 
+      - name: Existing backend test suite
+        run: npm test
+
   frontend-security-check:
     runs-on: ubuntu-latest
     defaults:
