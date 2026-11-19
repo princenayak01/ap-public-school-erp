@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -68,7 +70,7 @@ export default function TimetablePage() {
   const fetchTimetable = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/v1/timetable?className=${encodeURIComponent(selectedClass)}&sectionName=${encodeURIComponent(selectedSection)}`);
+      const res = await authenticatedFetch(`/api/v1/timetable?className=${encodeURIComponent(selectedClass)}&sectionName=${encodeURIComponent(selectedSection)}`);
       const data = await res.json();
       if (data.success && data.data) {
         setSlots(data.data);
@@ -105,7 +107,7 @@ export default function TimetablePage() {
   const handleSaveSlot = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/v1/timetable', {
+      const res = await authenticatedFetch('/api/v1/timetable', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
