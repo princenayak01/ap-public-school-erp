@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "backend/**"
+      - "frontend/**"
       - ".github/workflows/backend-security-check.yml"
   push:
     branches: [security/multi-tenant-isolation-audit]
