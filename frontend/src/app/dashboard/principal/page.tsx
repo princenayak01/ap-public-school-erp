@@ -48,19 +48,20 @@ export default function PrincipalDashboard() {
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('apps_user');
-      if (storedUser) {
-        const u = JSON.parse(storedUser);
-        if (u.role === 'TEACHER' || u.role === 'PARENT' || u.role === 'PRINCIPAL') {
-          setActiveRole(u.role);
-          if (u.role !== 'PRINCIPAL') return;
-        }
+      const token = localStorage.getItem('apps_token');
+      if (!storedUser || !token) {
+        window.location.replace('/login/principal');
+        return;
       }
-    } catch (e) {}
-
-    const stored = localStorage.getItem('apps_active_role');
-    if (stored === 'TEACHER' || stored === 'PARENT' || stored === 'PRINCIPAL') {
-      setActiveRole(stored);
-      if (stored !== 'PRINCIPAL') return;
+      const u = JSON.parse(storedUser);
+      if (u.role !== 'PRINCIPAL' && u.role !== 'SCHOOL_ADMIN') {
+        window.location.replace('/login/principal');
+        return;
+      }
+      setActiveRole('PRINCIPAL');
+    } catch (e) {
+      window.location.replace('/login/principal');
+      return;
     }
 
     fetch('/api/v1/dashboard/principal')

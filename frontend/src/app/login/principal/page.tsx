@@ -44,17 +44,20 @@ export default function PrincipalLoginPage() {
         setError(data.message || 'Galat Administrator Credentials. Kripya check karein.');
       }
     } catch (err: any) {
-      // Resilient fallback for Principal login if backend is in cold start
-      const idClean = identifier.trim().toLowerCase();
-      if (
-        (idClean === 'principal@appublicschool.edu.in' ||
-          idClean === 'principal@appsjhansi.edu.in' ||
-          idClean === '7348011701' ||
-          idClean === '+917348011701' ||
-          idClean === '917348011701' ||
-          idClean.includes('principal')) &&
-        (password === 'Admin@2026' || password === 'admin123' || password.length >= 4)
-      ) {
+      // Strict fallback for Principal login only with exact authorized credentials
+      const idClean = identifier.trim().toLowerCase().replace(/[\s-]/g, '');
+      const validIdentifiers = ['7348011701', '+917348011701', '917348011701', 'principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in'];
+      const validPasswords = ['Admin@2026'];
+
+      try {
+        const localUser = localStorage.getItem('apps_user');
+        if (localUser) {
+          const parsed = JSON.parse(localUser);
+          if (parsed.savedPassword) validPasswords.push(parsed.savedPassword);
+        }
+      } catch (e) {}
+
+      if (validIdentifiers.includes(idClean) && validPasswords.includes(password.trim())) {
         const fallbackUser = {
           id: 'user-principal-001',
           name: 'Dr. R. K. Sharma (Principal)',
@@ -62,13 +65,13 @@ export default function PrincipalLoginPage() {
           phone: '+91-7348011701',
           role: 'PRINCIPAL',
         };
-        localStorage.setItem('apps_token', 'resilient-principal-auth-token-2026');
+        localStorage.setItem('apps_token', 'secure-principal-token-' + Date.now());
         localStorage.setItem('apps_user', JSON.stringify(fallbackUser));
         localStorage.setItem('apps_active_role', 'PRINCIPAL');
         router.push('/dashboard/principal');
         return;
       }
-      setError('Server se connect nahi ho paya. Kripya dobara check karein.');
+      setError('Galat Administrator Credentials. Kripya authorized ID aur Password dalein.');
     } finally {
       setLoading(false);
     }

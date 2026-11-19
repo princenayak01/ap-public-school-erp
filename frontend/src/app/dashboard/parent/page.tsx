@@ -41,7 +41,22 @@ export default function ParentPortal() {
   const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
-    localStorage.setItem('apps_active_role', 'PARENT');
+    try {
+      const storedUser = localStorage.getItem('apps_user');
+      const token = localStorage.getItem('apps_token');
+      if (!storedUser || !token) {
+        window.location.replace('/login/parent');
+        return;
+      }
+      const u = JSON.parse(storedUser);
+      if (u.role !== 'PARENT' && u.role !== 'PRINCIPAL') {
+        window.location.replace('/login/parent');
+        return;
+      }
+    } catch (e) {
+      window.location.replace('/login/parent');
+      return;
+    }
     fetchChildren();
   }, []);
 

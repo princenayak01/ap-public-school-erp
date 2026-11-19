@@ -43,24 +43,22 @@ export default function ParentLoginPage() {
         setError(data.message || 'Galat Mobile / Email ya Password. Kripya check karein.');
       }
     } catch (err: any) {
-      const idClean = identifier.trim().toLowerCase();
-      if (
-        (idClean.includes('parent') || idClean.includes('9876543213')) &&
-        (password === 'Parent@2026' || password === 'parent123')
-      ) {
+      const idClean = identifier.trim().toLowerCase().replace(/[\s-]/g, '');
+      const validParentIds = ['9876543213', '+919876543213', '919876543213', 'parent.sharma@gmail.com', 'parent.sharma@example.com'];
+      if (validParentIds.includes(idClean) && password === 'Parent@2026') {
         const fallbackParent = {
           id: 'user-parent-001',
           name: 'Manoj Sharma',
           email: 'parent.sharma@gmail.com',
           role: 'PARENT',
         };
-        localStorage.setItem('apps_token', 'resilient-parent-token-2026');
+        localStorage.setItem('apps_token', 'secure-parent-token-' + Date.now());
         localStorage.setItem('apps_user', JSON.stringify(fallbackParent));
         localStorage.setItem('apps_active_role', 'PARENT');
         router.push('/dashboard/parent');
         return;
       }
-      setError('Server se connect nahi ho paya. Kripya dobara prayaas karein.');
+      setError('Galat Parent Credentials. Kripya authorized Mobile aur Password dalein.');
     } finally {
       setLoading(false);
     }

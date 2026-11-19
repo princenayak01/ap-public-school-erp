@@ -28,13 +28,23 @@ export default function TeacherDashboardPage() {
   const [activeRole, setActiveRole] = useState<'TEACHER' | 'PARENT' | 'PRINCIPAL'>('TEACHER');
 
   useEffect(() => {
-    const stored = localStorage.getItem('apps_active_role');
-    if (stored === 'PARENT') {
-      setActiveRole('PARENT');
+    try {
+      const storedUser = localStorage.getItem('apps_user');
+      const token = localStorage.getItem('apps_token');
+      if (!storedUser || !token) {
+        window.location.replace('/login/teacher');
+        return;
+      }
+      const u = JSON.parse(storedUser);
+      if (u.role !== 'TEACHER' && u.role !== 'PRINCIPAL') {
+        window.location.replace('/login/teacher');
+        return;
+      }
+      setActiveRole(u.role);
+    } catch (e) {
+      window.location.replace('/login/teacher');
       return;
     }
-    localStorage.setItem('apps_active_role', 'TEACHER');
-    setActiveRole('TEACHER');
 
     async function loadStats() {
       try {
