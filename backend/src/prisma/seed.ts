@@ -3,7 +3,7 @@ import { hashPassword } from '../utils/password';
 import { Role, Gender, StudentStatus, AttendanceStatus, FeeFrequency, InvoiceStatus, PaymentMode, PaymentStatus, ExamTerm } from '@prisma/client';
 
 export async function main() {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' || process.env.ALLOW_DEMO_SEED !== 'true') {
     throw new Error('Database seeding is disabled in production. Use the reviewed tenant onboarding workflow instead.');
   }
   console.log('🌱 Starting development/test database seeding for A. P PUBLIC SCHOOL, Jhansi...');
