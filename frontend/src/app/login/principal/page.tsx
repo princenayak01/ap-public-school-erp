@@ -43,10 +43,23 @@ export default function PrincipalLoginPage() {
         setResetMsg(data.message || `1-Time OTP sent to your WhatsApp / Mobile (${registeredContact}).`);
         setOtpCode('');
 
-        // Automatically trigger real-time WhatsApp web dispatch directly to user's phone
-        const otpText = `*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${data.otp || 'CONFIRMED'}*\nValid for 10 minutes. Do not share with anyone.`;
-        const waUrl = `https://api.whatsapp.com/send?phone=916306262479&text=${encodeURIComponent(otpText)}`;
-        window.open(waUrl, '_blank');
+        // Store OTP if returned by server
+        if (data.otp) {
+          setGeneratedDemoOtp(data.otp);
+        }
+
+        // WhatsApp direct wa.me link with clean parameters (works universally in Chrome, Mobile, Web)
+        const otpText = `*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${data.otp || 'CONFIRMED'}*\nValid for 10 minutes.`;
+        const waUrl = `https://wa.me/916306262479?text=${encodeURIComponent(otpText)}`;
+        
+        try {
+          // Open cleanly without Chrome pop-up blocking issues
+          const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
+          if (!win) {
+            // Fallback if browser blocked popup: redirect or provide 1-click button
+            setResetMsg('Click the WhatsApp button below if it did not open automatically.');
+          }
+        } catch (e) {}
       } else {
         setResetError(data.message || 'OTP generation failed.');
       }
@@ -310,9 +323,20 @@ export default function PrincipalLoginPage() {
               </form>
             ) : (
               <form onSubmit={handleVerifyAndUpdate} className="space-y-4">
-                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs">
-                  <p className="font-semibold">WhatsApp / SMS Verification Active:</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Aapke number <strong>+{registeredContact}</strong> par 6-digit OTP code deliver kiya gaya hai. Kripya check karke enter karein.</p>
+                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs flex flex-col gap-2">
+                  <div>
+                    <p className="font-semibold">WhatsApp Verification Active:</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Aapke WhatsApp number <strong>+{registeredContact}</strong> par 6-digit OTP code send kiya gaya hai.</p>
+                  </div>
+                  <a
+                    href={`https://wa.me/916306262479?text=${encodeURIComponent(`*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${generatedDemoOtp || 'CONFIRMED'}*\nValid for 10 minutes.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all w-fit space-x-1"
+                  >
+                    <span>Open in WhatsApp (Direct)</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
                 </div>
 
                 <div>
