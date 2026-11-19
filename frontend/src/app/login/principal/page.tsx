@@ -16,7 +16,7 @@ export default function PrincipalLoginPage() {
   // 2-Step Real-Time OTP Reset States
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetStep, setResetStep] = useState<'REQUEST_OTP' | 'VERIFY_AND_UPDATE'>('REQUEST_OTP');
-  const [registeredContact, setRegisteredContact] = useState('916306262479');
+  const [registeredContact, setRegisteredContact] = useState('917348011701');
   const [otpCode, setOtpCode] = useState('');
   const [generatedDemoOtp, setGeneratedDemoOtp] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -50,7 +50,7 @@ export default function PrincipalLoginPage() {
 
         // WhatsApp direct wa.me link with clean parameters (works universally in Chrome, Mobile, Web)
         const otpText = `*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${data.otp || 'CONFIRMED'}*\nValid for 10 minutes.`;
-        const waUrl = `https://wa.me/916306262479?text=${encodeURIComponent(otpText)}`;
+        const waUrl = `https://wa.me/917348011701?text=${encodeURIComponent(otpText)}`;
         
         try {
           // Open cleanly without Chrome pop-up blocking issues
@@ -307,7 +307,7 @@ export default function PrincipalLoginPage() {
                       onChange={(e) => setRegisteredContact(e.target.value)}
                       required
                       className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
-                      placeholder="916306262479 or email"
+                      placeholder="917348011701 or email"
                     />
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export default function PrincipalLoginPage() {
                     <p className="text-[11px] text-slate-400 mt-0.5">Aapke WhatsApp number <strong>+{registeredContact}</strong> par 6-digit OTP code send kiya gaya hai.</p>
                   </div>
                   <a
-                    href={`https://wa.me/916306262479?text=${encodeURIComponent(`*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${generatedDemoOtp || 'CONFIRMED'}*\nValid for 10 minutes.`)}`}
+                    href={`https://wa.me/917348011701?text=${encodeURIComponent(`*A. P PUBLIC SCHOOL, JHANSI*\nYour Security Verification OTP is: *${generatedDemoOtp || 'CONFIRMED'}*\nValid for 10 minutes.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all w-fit space-x-1"

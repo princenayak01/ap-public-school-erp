@@ -11,7 +11,7 @@ const FALLBACK_USERS: Record<string, any> = {
     id: 'user-principal-001',
     name: 'Dr. R. K. Sharma (Principal)',
     email: 'principal@appublicschool.edu.in',
-    phone: '+91-9876543210',
+    phone: '+91-7348011701',
     role: Role.PRINCIPAL,
     passwords: ['Admin@2026', 'admin123'],
     avatarUrl: null,
@@ -20,7 +20,7 @@ const FALLBACK_USERS: Record<string, any> = {
     id: 'user-principal-001',
     name: 'Dr. R. K. Sharma (Principal)',
     email: 'principal@appsjhansi.edu.in',
-    phone: '+91-9876543210',
+    phone: '+91-7348011701',
     role: Role.PRINCIPAL,
     passwords: ['Admin@2026', 'admin123'],
     avatarUrl: null,
@@ -420,7 +420,7 @@ export class AuthService {
       throw { status: 400, message: 'Please provide either a new Email or a new Password to update.' };
     }
 
-    const principalKeys = ['principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in', '916306262479', '+91-9876543210'];
+    const principalKeys = ['principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in', '917348011701', '7348011701', '+91-7348011701', '916306262479'];
     let target = FALLBACK_USERS['principal@appublicschool.edu.in'];
 
     if (data.newEmail) {
