@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -36,7 +38,7 @@ export default function PrincipalDashboard() {
 
   const loadPendingUsers = async () => {
     try {
-      const res = await fetch('/api/v1/admin/pending-users');
+      const res = await authenticatedFetch('/api/v1/admin/pending-users');
       const resData = await res.json();
       if (resData.success && resData.data) {
         setPendingUsers(resData.data);
@@ -66,7 +68,7 @@ export default function PrincipalDashboard() {
       return;
     }
 
-    fetch('/api/v1/dashboard/principal')
+    authenticatedFetch('/api/v1/dashboard/principal')
       .then((res) => res.json())
       .then((resData) => {
         if (resData.success && resData.data) {
@@ -80,7 +82,7 @@ export default function PrincipalDashboard() {
 
   const handleApprove = async (userId: string, userName: string) => {
     try {
-      const res = await fetch(`/api/v1/admin/approve-user/${userId}`, {
+      const res = await authenticatedFetch(`/api/v1/admin/approve-user/${userId}`, {
         method: 'PUT',
       });
       const resData = await res.json();
@@ -95,7 +97,7 @@ export default function PrincipalDashboard() {
 
   const handleReject = async (userId: string, userName: string) => {
     try {
-      const res = await fetch(`/api/v1/admin/reject-user/${userId}`, {
+      const res = await authenticatedFetch(`/api/v1/admin/reject-user/${userId}`, {
         method: 'PUT',
       });
       const resData = await res.json();
