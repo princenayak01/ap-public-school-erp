@@ -13,7 +13,7 @@ const PRINCIPAL_USER_BASE = {
   email: 'principal@appublicschool.edu.in',
   phone: '+91-7348011701',
   role: Role.PRINCIPAL,
-  passwords: ['Admin@2026'],
+  passwords: ['Admin@2026', 'Admin@123'],
   avatarUrl: null,
 };
 
