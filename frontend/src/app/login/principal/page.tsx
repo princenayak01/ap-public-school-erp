@@ -43,53 +43,8 @@ export default function PrincipalLoginPage() {
       } else {
         setError(data.message || 'Galat Administrator Credentials. Kripya check karein.');
       }
-    } catch (err: any) {
-      // Strict fallback for Principal login with authorized User ID, Phone, or Email
-      const idClean = identifier.trim().toLowerCase().replace(/[\s-]/g, '');
-      const validIdentifiers = [
-        'admin',
-        'principal',
-        'apps-principal',
-        'apps-principal-01',
-        'prin-001',
-        'admin-001',
-        'user-principal-001',
-        '7348011701',
-        '+917348011701',
-        '917348011701',
-        '6306262479',
-        '+916306262479',
-        '916306262479',
-        'principal@appublicschool.edu.in',
-        'principal@appsjhansi.edu.in',
-      ];
-      const validPasswords = ['Admin@2026'];
-
-      try {
-        const localUser = localStorage.getItem('apps_user');
-        if (localUser) {
-          const parsed = JSON.parse(localUser);
-          if (parsed.userId) validIdentifiers.push(parsed.userId.toLowerCase().trim());
-          if (parsed.savedPassword) validPasswords.push(parsed.savedPassword);
-        }
-      } catch (e) {}
-
-      if (validIdentifiers.includes(idClean) && validPasswords.includes(password.trim())) {
-        const fallbackUser = {
-          id: 'user-principal-001',
-          userId: idClean === 'admin' || idClean === 'principal' ? idClean.toUpperCase() : 'APPS-PRINCIPAL-01',
-          name: 'Dr. R. K. Sharma (Principal)',
-          email: identifier.includes('@') ? identifier : 'principal@appublicschool.edu.in',
-          phone: '+91-7348011701',
-          role: 'PRINCIPAL',
-        };
-        localStorage.setItem('apps_token', 'secure-principal-token-' + Date.now());
-        localStorage.setItem('apps_user', JSON.stringify(fallbackUser));
-        localStorage.setItem('apps_active_role', 'PRINCIPAL');
-        router.push('/dashboard/principal');
-        return;
-      }
-      setError('Galat Administrator Credentials. Kripya authorized User ID / Mobile aur Password dalein.');
+    } catch {
+      setError('Authentication service unavailable. Please try again.');
     } finally {
       setLoading(false);
     }

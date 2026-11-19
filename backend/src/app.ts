@@ -8,27 +8,28 @@ import { errorHandler } from './middleware/error.middleware';
 
 export const app = express();
 
-// Security & Parsing Middleware
+app.disable('x-powered-by');
 app.use(helmet());
+const allowedOrigins = new Set(config.cors.origin);
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, etc.)
+      // Native clients and server-to-server requests may omit Origin.
       if (!origin) return callback(null, true);
-      return callback(null, true);
+      if (allowedOrigins.has(origin)) return callback(null, true);
+      return callback(new Error('Origin is not allowed by CORS.'));
     },
     credentials: true,
   })
 );
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 if (config.env !== 'test') {
   app.use(morgan('dev'));
 }
 
-// Health Check Endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'healthy',
     school: 'A. P PUBLIC SCHOOL, Jhansi',
@@ -38,10 +39,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API v1 Routes
 app.use('/api/v1', apiRouter);
-
-// Global Error Handler
 app.use(errorHandler);
 
 export default app;

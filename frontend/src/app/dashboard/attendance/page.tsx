@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
@@ -60,7 +62,7 @@ export default function AttendancePage() {
   React.useEffect(() => {
     async function loadAttendance() {
       try {
-        const res = await fetch(`/api/v1/attendance/daily-sheet?date=${attendanceDate}`);
+        const res = await authenticatedFetch(`/api/v1/attendance/daily-sheet?date=${attendanceDate}`);
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setStudents(data.data.map((st: any) => ({
@@ -93,7 +95,7 @@ export default function AttendancePage() {
   const saveDailyAttendance = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/v1/attendance/mark', {
+      const res = await authenticatedFetch('/api/v1/attendance/mark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -119,7 +121,7 @@ export default function AttendancePage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch('/api/v1/attendance/date-range', {
+      const res = await authenticatedFetch('/api/v1/attendance/date-range', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

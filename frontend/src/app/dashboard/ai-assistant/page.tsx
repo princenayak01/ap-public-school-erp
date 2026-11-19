@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -41,7 +43,7 @@ export default function AIAssistantPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/v1/ai/ask', {
+      const res = await authenticatedFetch('/api/v1/ai/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

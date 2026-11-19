@@ -14,7 +14,7 @@ prisma
   })
   .catch(() => {
     isDbOnline = false;
-    console.log('⚡ High-speed local datastore mode ACTIVE (< 5ms response time).');
+    console.error('❌ PostgreSQL unavailable. Protected API requests will fail closed.');
   });
 
 export default prisma;

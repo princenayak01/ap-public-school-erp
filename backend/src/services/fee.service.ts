@@ -105,33 +105,42 @@ export class FeeService {
 
   // 3. Record Fee Payment (Cash, UPI, Cheque, Bank Transfer)
   static async recordPayment(invoiceId: string, amountPaid: number, paymentMode: PaymentMode, collectedByUserId?: string, notes?: string) {
-    const invoice = await prisma.feeInvoice.findUnique({
-      where: { id: invoiceId },
-      include: { student: true },
-    });
+    return prisma.$transaction(async (tx) => {
+      const invoice = await tx.feeInvoice.findUnique({ where: { id: invoiceId } });
+      if (!invoice) throw { status: 404, message: 'Fee invoice not found.' };
+      if (invoice.status === InvoiceStatus.PAID) {
+        throw { status: 400, message: 'This invoice has already been fully paid.' };
+      }
 
-    if (!invoice) throw { status: 404, message: 'Fee invoice not found.' };
+      const currentBalance = Number(invoice.balanceAmount);
+      if (!Number.isFinite(amountPaid) || amountPaid <= 0 || amountPaid > currentBalance) {
+        throw { status: 400, message: 'Payment amount must be positive and cannot exceed the outstanding balance.' };
+      }
 
-    if (invoice.status === InvoiceStatus.PAID) {
-      throw { status: 400, message: 'This invoice has already been fully paid.' };
-    }
-
-    const currentBalance = Number(invoice.balanceAmount);
-    if (amountPaid > currentBalance) {
-      throw { status: 400, message: `Payment amount (₹${amountPaid}) cannot exceed outstanding balance (₹${currentBalance}).` };
-    }
-
-    // Receipt Number Generation
-    const receiptCount = (await prisma.feePayment.count()) + 1;
-    const receiptNo = `REC-2026-${String(receiptCount).padStart(5, '0')}`;
-
-    // Transaction to ensure atomicity
-    const payment = await prisma.$transaction(async (tx) => {
       const newPaid = Number(invoice.paidAmount) + amountPaid;
-      const newBalance = Number(invoice.totalAmount) - newPaid;
-      const newStatus = newBalance <= 0 ? InvoiceStatus.PAID : InvoiceStatus.PARTIAL;
+      const newBalance = Math.max(0, currentBalance - amountPaid);
+      const newStatus = newBalance === 0 ? InvoiceStatus.PAID : InvoiceStatus.PARTIAL;
 
-      const pmt = await tx.feePayment.create({
+      // Optimistic concurrency check prevents two simultaneous requests from
+      // collecting against the same stale invoice balance.
+      const update = await tx.feeInvoice.updateMany({
+        where: {
+          id: invoice.id,
+          balanceAmount: invoice.balanceAmount,
+          status: { not: InvoiceStatus.PAID },
+        },
+        data: {
+          paidAmount: newPaid,
+          balanceAmount: newBalance,
+          status: newStatus,
+        },
+      });
+      if (update.count !== 1) {
+        throw { status: 409, message: 'Invoice changed during payment. Refresh and retry.' };
+      }
+
+      const receiptNo = `REC-${crypto.randomUUID().replace(/-/g, '').slice(0, 16).toUpperCase()}`;
+      return tx.feePayment.create({
         data: {
           receiptNo,
           invoiceId: invoice.id,
@@ -143,20 +152,7 @@ export class FeeService {
           notes,
         },
       });
-
-      await tx.feeInvoice.update({
-        where: { id: invoice.id },
-        data: {
-          paidAmount: newPaid,
-          balanceAmount: Math.max(0, newBalance),
-          status: newStatus,
-        },
-      });
-
-      return pmt;
     });
-
-    return payment;
   }
 
   // 4. Online Razorpay Integration & Webhook Verification
@@ -206,7 +202,7 @@ export class FeeService {
       .digest('hex');
 
     // In production or test environment:
-    const isValid = config.env === 'development' || expectedSignature === razorpaySignature;
+    const isValid = expectedSignature === razorpaySignature;
     if (!isValid) {
       throw { status: 400, message: 'Payment verification failed. Invalid digital signature.' };
     }

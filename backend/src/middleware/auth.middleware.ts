@@ -6,38 +6,46 @@ export interface AuthenticatedRequest extends Request {
   user?: TokenPayload;
 }
 
+/**
+ * Authentication is fail-closed in every environment.
+ * Demo identities must never be synthesized by API middleware.
+ */
 export function authenticateJWT(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    // In local development, provide fallback principal context for instant fullstack operations
-    req.user = {
-      userId: 'user-principal-001',
-      email: 'principal@appsjhansi.edu.in',
-      name: 'Dr. R. K. Sharma (Principal)',
-      role: Role.PRINCIPAL,
-    };
-    return next();
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized. A valid Bearer access token is required.',
+      code: 'AUTHENTICATION_REQUIRED',
+    });
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.slice('Bearer '.length).trim();
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized. A valid Bearer access token is required.',
+      code: 'AUTHENTICATION_REQUIRED',
+    });
+  }
 
   try {
-    const decoded = verifyAccessToken(token);
-    req.user = decoded;
-    next();
+    req.user = verifyAccessToken(token);
+    return next();
   } catch (err: any) {
-    if (err.name === 'TokenExpiredError') {
+    if (err?.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Access token expired. Please refresh your session.',
+        message: 'Access token expired. Please sign in again.',
         code: 'TOKEN_EXPIRED',
       });
     }
 
-    return res.status(403).json({
+    return res.status(401).json({
       success: false,
-      message: 'Invalid or forged authentication token.',
+      message: 'Invalid authentication token.',
+      code: 'INVALID_TOKEN',
     });
   }
 }
@@ -54,10 +62,10 @@ export function authorizeRoles(...allowedRoles: Role[]) {
     if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: `Forbidden. Role '${req.user.role}' is not authorized to access this resource. Required: [${allowedRoles.join(', ')}]`,
+        message: 'Forbidden. Your role is not authorized for this resource.',
       });
     }
 
-    next();
+    return next();
   };
 }

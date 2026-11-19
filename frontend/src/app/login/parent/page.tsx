@@ -49,40 +49,8 @@ export default function ParentLoginPage() {
       } else {
         setError(data.message || 'Galat Mobile / Email ya Password. Kripya check karein.');
       }
-    } catch (err: any) {
-      const idClean = identifier.trim().toLowerCase().replace(/[\s-]/g, '');
-      const validParentIds = ['9876543213', '+919876543213', '919876543213', 'parent.sharma@gmail.com', 'parent.sharma@example.com'];
-      if (validParentIds.includes(idClean) && password === 'Parent@2026') {
-        const fallbackParent = {
-          id: 'user-parent-001',
-          name: 'Manoj Sharma',
-          email: 'parent.sharma@gmail.com',
-          phone: '9876543213',
-          role: 'PARENT',
-          childName: 'Aarav Sharma',
-        };
-        localStorage.setItem('apps_token', 'secure-parent-token-' + Date.now());
-        localStorage.setItem('apps_user', JSON.stringify(fallbackParent));
-        localStorage.setItem('apps_active_role', 'PARENT');
-        router.push('/dashboard/parent');
-        return;
-      }
-
-      if (idClean === '7309720610' || idClean === '917309720610' || idClean === '+917309720610') {
-        const fallbackPrince = {
-          id: 'user-parent-prince',
-          name: 'Prince Nayak',
-          email: 'prince@apps.edu.in',
-          phone: '7309720610',
-          role: 'PARENT',
-        };
-        localStorage.setItem('apps_token', 'secure-parent-token-' + Date.now());
-        localStorage.setItem('apps_user', JSON.stringify(fallbackPrince));
-        localStorage.setItem('apps_active_role', 'PARENT');
-        router.push('/dashboard/parent');
-        return;
-      }
-      setError('Galat Parent Credentials. Kripya authorized Mobile aur Password dalein.');
+    } catch {
+      setError('Authentication service unavailable. Please try again.');
     } finally {
       setLoading(false);
     }

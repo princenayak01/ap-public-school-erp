@@ -1,4 +1,16 @@
 // API Client for A. P PUBLIC SCHOOL ERP
+// Attach the server-issued access token to dashboard API requests.
+export async function authenticatedFetch(input: RequestInfo | URL, options: RequestInit = {}) {
+  const headers = new Headers(options.headers || {});
+  const token = typeof window !== 'undefined' ? localStorage.getItem('apps_token') : null;
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  return fetch(input, {
+    ...options,
+    headers,
+    cache: options.cache || 'no-store',
+  });
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 export async function apiRequest(endpoint: string, options: RequestInit = {}) {
