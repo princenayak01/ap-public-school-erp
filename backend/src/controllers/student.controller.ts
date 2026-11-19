@@ -1,223 +1,104 @@
 import { Request, Response, NextFunction } from 'express';
 import { StudentService } from '../services/student.service';
-import datastore from '../utils/datastore';
-import { createStudentAdmissionSchema, updateStudentSchema, promoteStudentSchema } from '../validations/student.validation';
-
+import { createStudentAdmissionSchema, promoteStudentSchema } from '../validations/student.validation';
 import { isDbOnline } from '../prisma/client';
+
+const databaseUnavailable = (res: Response) =>
+  res.status(503).json({
+    success: false,
+    message: 'Student operations require the PostgreSQL database. Local JSON fallback is disabled.',
+    code: 'DATABASE_UNAVAILABLE',
+  });
+
+const notImplementedSafely = (res: Response, operation: string) =>
+  res.status(501).json({
+    success: false,
+    message: `${operation} is temporarily disabled until its tenant-scoped PostgreSQL implementation is completed.`,
+    code: 'TENANT_SAFE_OPERATION_NOT_READY',
+  });
 
 export class StudentController {
   static async admit(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!isDbOnline) {
-        const student = datastore.admitStudent(req.body);
-        return res.status(201).json({
-          success: true,
-          message: `New student admitted successfully with Admission No: ${student.admissionNo}.`,
-          data: student,
-        });
-      }
-
-      try {
-        const validated = createStudentAdmissionSchema.parse(req.body);
-        const student = await StudentService.admitStudent(validated);
-        return res.status(201).json({
-          success: true,
-          message: 'New student admitted successfully.',
-          data: student,
-        });
-      } catch (dbErr) {
-        const student = datastore.admitStudent(req.body);
-        return res.status(201).json({
-          success: true,
-          message: `New student admitted successfully with Admission No: ${student.admissionNo}.`,
-          data: student,
-        });
-      }
+      if (!isDbOnline) return databaseUnavailable(res);
+      const validated = createStudentAdmissionSchema.parse(req.body);
+      const student = await StudentService.admitStudent(validated);
+      return res.status(201).json({ success: true, message: 'New student admitted successfully.', data: student });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
   static async list(req: Request, res: Response, next: NextFunction) {
     try {
-      const authUser = (req as any).user;
-      // STRICT PRIVACY PROTECTION: If requester is a PARENT, only return their own children
-      if (authUser && authUser.role === 'PARENT') {
-        const phone = (req.query.phone as string) || authUser.phone || '';
-        const email = (req.query.email as string) || authUser.email || '';
-        const parentChildren = datastore.getChildrenForParent({
-          userId: authUser.userId || authUser.id,
-          phone,
-          email,
-        });
-        return res.status(200).json({
-          success: true,
-          data: parentChildren,
-          pagination: { total: parentChildren.length, page: 1, limit: 50, totalPages: 1 },
-        });
+      if (!isDbOnline) return databaseUnavailable(res);
+      if ((req as any).user?.role === 'PARENT') {
+        return res.status(403).json({ success: false, message: 'Use the parent portal to access linked children.' });
       }
 
-      if (!isDbOnline) {
-        const students = datastore.getStudents({
-          class: req.query.classId as string,
-          search: req.query.search as string,
-        });
-        return res.status(200).json({
-          success: true,
-          data: students,
-          pagination: { total: students.length, page: 1, limit: 50, totalPages: 1 },
-        });
-      }
-
-      try {
-        const filters = {
-          classId: req.query.classId as string,
-          sectionId: req.query.sectionId as string,
-          search: req.query.search as string,
-          status: req.query.status as any,
-          page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
-          limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 25,
-        };
-
-        const result = await StudentService.getStudents(filters);
-        return res.status(200).json({
-          success: true,
-          data: result.students,
-          pagination: result.pagination,
-        });
-      } catch (dbErr) {
-        const students = datastore.getStudents({
-          class: req.query.classId as string,
-          search: req.query.search as string,
-        });
-        return res.status(200).json({
-          success: true,
-          data: students,
-          pagination: { total: students.length, page: 1, limit: 50, totalPages: 1 },
-        });
-      }
+      const filters = {
+        classId: req.query.classId as string,
+        sectionId: req.query.sectionId as string,
+        search: req.query.search as string,
+        status: req.query.status as any,
+        page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
+        limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 25,
+      };
+      const result = await StudentService.getStudents(filters);
+      return res.status(200).json({
+        success: true,
+        data: result.students,
+        pagination: result.pagination,
+      });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!isDbOnline) {
-        return res.status(503).json({
-          success: false,
-          message: 'Student records are temporarily unavailable. Please try again when the database connection is restored.',
-          code: 'DATABASE_UNAVAILABLE',
-        });
+      if (!isDbOnline) return databaseUnavailable(res);
+      if ((req as any).user?.role === 'PARENT') {
+        return res.status(403).json({ success: false, message: 'Use the parent portal to access linked children.' });
       }
-
       const student = await StudentService.getStudentById(req.params.id);
       return res.status(200).json({ success: true, data: student });
     } catch (err: any) {
-      if (err?.status === 404) {
-        return res.status(404).json({ success: false, message: 'Student not found.' });
-      }
+      if (err?.status === 404) return res.status(404).json({ success: false, message: 'Student not found.' });
       return next(err);
     }
   }
 
-  static async updateRollNo(req: Request, res: Response, next: NextFunction) {
-    try {
-      const studentId = req.params.id;
-      const rollNumber = req.body.rollNumber;
-      if (!rollNumber) {
-        return res.status(400).json({ success: false, message: 'Roll number is required.' });
-      }
-      const updated = datastore.updateStudentRollNo(studentId, rollNumber);
-      return res.status(200).json({
-        success: true,
-        message: `Roll number updated to ${rollNumber} successfully.`,
-        data: updated,
-      });
-    } catch (err: any) {
-      return res.status(400).json({ success: false, message: err.message || 'Failed to update roll number.' });
-    }
+  static async updateRollNo(_req: Request, res: Response) {
+    return notImplementedSafely(res, 'Roll number update');
   }
 
-  static async bulkUpload(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { students } = req.body;
-      if (!students || !Array.isArray(students) || students.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'Please provide a valid list of students in the request body.',
-        });
-      }
-
-      const added = datastore.bulkAdmitStudents(students);
-      return res.status(201).json({
-        success: true,
-        message: `Successfully uploaded and enrolled ${added.length} students into the school registry!`,
-        data: added,
-      });
-    } catch (err: any) {
-      return res.status(500).json({
-        success: false,
-        message: err.message || 'Failed to bulk upload students.',
-      });
-    }
+  static async bulkUpload(_req: Request, res: Response) {
+    return notImplementedSafely(res, 'Bulk student upload');
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
-    try {
-      const studentId = req.params.id;
-      const removed = datastore.deleteStudent(studentId);
-      return res.status(200).json({
-        success: true,
-        message: `Student ${removed.firstName} ${removed.lastName} removed successfully.`,
-        data: removed,
-      });
-    } catch (err: any) {
-      return res.status(404).json({
-        success: false,
-        message: err.message || 'Student not found.',
-      });
-    }
+  static async delete(_req: Request, res: Response) {
+    return notImplementedSafely(res, 'Student deletion');
   }
 
-  static async clearAll(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = datastore.clearAllStudents();
-      return res.status(200).json({
-        success: true,
-        message: `Successfully cleared all ${result.clearedCount} test students from the database!`,
-        data: result,
-      });
-    } catch (err: any) {
-      return res.status(500).json({
-        success: false,
-        message: err.message || 'Failed to clear students.',
-      });
-    }
+  static async clearAll(_req: Request, res: Response) {
+    return res.status(403).json({
+      success: false,
+      message: 'Bulk deletion is disabled for production safety.',
+      code: 'DESTRUCTIVE_OPERATION_DISABLED',
+    });
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(_req: Request, res: Response) {
+    return notImplementedSafely(res, 'Student update');
+  }
+
+  static async promote(req: Request, res: Response) {
     try {
-      return res.status(200).json({
-        success: true,
-        message: 'Student profile updated.',
-        data: req.body,
-      });
+      promoteStudentSchema.parse(req.body);
+      return notImplementedSafely(res, 'Student promotion');
     } catch (err) {
-      next(err);
-    }
-  }
-
-  static async promote(req: Request, res: Response, next: NextFunction) {
-    try {
-      const validated = promoteStudentSchema.parse(req.body);
-      return res.status(200).json({
-        success: true,
-        message: `Successfully promoted ${validated.studentIds.length} students.`,
-        data: { promotedCount: validated.studentIds.length },
-      });
-    } catch (err) {
-      next(err);
+      return res.status(400).json({ success: false, message: 'Invalid student promotion request.' });
     }
   }
 }
