@@ -40,11 +40,8 @@ export default function PrincipalLoginPage() {
       const data = await res.json();
       if (data.success) {
         setResetStep('VERIFY_AND_UPDATE');
-        setResetMsg(data.message || 'OTP sent successfully!');
-        if (data.otp) {
-          setGeneratedDemoOtp(data.otp);
-          setOtpCode(data.otp);
-        }
+        setResetMsg(data.message || `1-Time OTP sent to your WhatsApp / Mobile (${registeredContact}).`);
+        setOtpCode('');
       } else {
         setResetError(data.message || 'OTP generation failed.');
       }
@@ -308,12 +305,10 @@ export default function PrincipalLoginPage() {
               </form>
             ) : (
               <form onSubmit={handleVerifyAndUpdate} className="space-y-4">
-                {generatedDemoOtp && (
-                  <div className="p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs flex items-center justify-between">
-                    <span>Active Real-Time OTP:</span>
-                    <span className="font-mono font-black text-sm text-teal-200 tracking-widest">{generatedDemoOtp}</span>
-                  </div>
-                )}
+                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs">
+                  <p className="font-semibold">WhatsApp / SMS Verification Active:</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Aapke number <strong>+{registeredContact}</strong> par 6-digit OTP code deliver kiya gaya hai. Kripya check karke enter karein.</p>
+                </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">

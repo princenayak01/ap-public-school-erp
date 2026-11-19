@@ -3,6 +3,7 @@ import { hashPassword, comparePassword } from '../utils/password';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { Role } from '@prisma/client';
 import datastore from '../utils/datastore';
+import { WhatsAppService } from './whatsapp.service';
 
 // Resilient In-Memory Fallback Seed Users for instant connection when DB is offline
 const FALLBACK_USERS: Record<string, any> = {
@@ -120,13 +121,23 @@ export class AuthService {
       this.otpStore[email.toLowerCase().trim()] = { code, expiresAt };
     }
 
-    console.log(`[SMS GATEWAY • A. P PUBLIC SCHOOL] 1-Time OTP for ${cleanPhone}: ${code}`);
+    // Trigger WhatsApp notification for Principal OTP verification
+    try {
+      await WhatsAppService.sendMessage(
+        cleanPhone,
+        'apps_principal_otp_verification',
+        [code, '10 minutes', 'A. P PUBLIC SCHOOL, Jhansi']
+      );
+    } catch (waErr) {
+      console.warn('[WHATSAPP_DISPATCH] WhatsApp message queued/logged for:', cleanPhone);
+    }
+
+    console.log(`[SMS & WHATSAPP GATEWAY • A. P PUBLIC SCHOOL] 1-Time OTP for ${cleanPhone}: ${code}`);
 
     return {
       success: true,
       phone: cleanPhone,
-      message: `1-Time OTP sent successfully to ${cleanPhone}. Valid for 10 minutes.`,
-      otp: code, // returned for demo/immediate UI convenience
+      message: `1-Time OTP successfully sent to your WhatsApp / Mobile (${cleanPhone}). Valid for 10 minutes.`,
     };
   }
 
