@@ -39,10 +39,28 @@ const DEFAULT_STORE: StoreData = {
     { id: 'cls-8', name: 'Class 8', numericOrder: 10 },
   ],
   sections: [
-    { id: 'sec-4a', classId: 'cls-4', name: 'A', roomNumber: 'Room 104' },
-    { id: 'sec-4b', classId: 'cls-4', name: 'B', roomNumber: 'Room 105' },
-    { id: 'sec-1a', classId: 'cls-1', name: 'A', roomNumber: 'Room 101' },
-    { id: 'sec-1b', classId: 'cls-1', name: 'B', roomNumber: 'Room 102' },
+    { id: 'sec-nura', classId: 'cls-nur', name: 'A', roomNumber: 'Room 101' },
+    { id: 'sec-nurb', classId: 'cls-nur', name: 'B', roomNumber: 'Room 102' },
+    { id: 'sec-lkga', classId: 'cls-lkg', name: 'A', roomNumber: 'Room 103' },
+    { id: 'sec-lkgb', classId: 'cls-lkg', name: 'B', roomNumber: 'Room 104' },
+    { id: 'sec-ukga', classId: 'cls-ukg', name: 'A', roomNumber: 'Room 105' },
+    { id: 'sec-ukgb', classId: 'cls-ukg', name: 'B', roomNumber: 'Room 106' },
+    { id: 'sec-1a', classId: 'cls-1', name: 'A', roomNumber: 'Room 107' },
+    { id: 'sec-1b', classId: 'cls-1', name: 'B', roomNumber: 'Room 108' },
+    { id: 'sec-2a', classId: 'cls-2', name: 'A', roomNumber: 'Room 109' },
+    { id: 'sec-2b', classId: 'cls-2', name: 'B', roomNumber: 'Room 110' },
+    { id: 'sec-3a', classId: 'cls-3', name: 'A', roomNumber: 'Room 111' },
+    { id: 'sec-3b', classId: 'cls-3', name: 'B', roomNumber: 'Room 112' },
+    { id: 'sec-4a', classId: 'cls-4', name: 'A', roomNumber: 'Room 113' },
+    { id: 'sec-4b', classId: 'cls-4', name: 'B', roomNumber: 'Room 114' },
+    { id: 'sec-5a', classId: 'cls-5', name: 'A', roomNumber: 'Room 115' },
+    { id: 'sec-5b', classId: 'cls-5', name: 'B', roomNumber: 'Room 116' },
+    { id: 'sec-6a', classId: 'cls-6', name: 'A', roomNumber: 'Room 117' },
+    { id: 'sec-6b', classId: 'cls-6', name: 'B', roomNumber: 'Room 118' },
+    { id: 'sec-7a', classId: 'cls-7', name: 'A', roomNumber: 'Room 119' },
+    { id: 'sec-7b', classId: 'cls-7', name: 'B', roomNumber: 'Room 120' },
+    { id: 'sec-8a', classId: 'cls-8', name: 'A', roomNumber: 'Room 121' },
+    { id: 'sec-8b', classId: 'cls-8', name: 'B', roomNumber: 'Room 122' },
   ],
   students: [],
   attendance: [],
@@ -84,14 +102,33 @@ class DataStore {
   private load(): StoreData {
     try {
       if (fs.existsSync(DATA_FILE)) {
-        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-        return JSON.parse(raw);
+        let raw = fs.readFileSync(DATA_FILE, 'utf-8');
+        if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+        const parsed = JSON.parse(raw);
+        // Fallback: If students are missing or few, load from students_700.json
+        const fallback700Path = path.join(__dirname, '../../data/students_700.json');
+        if ((!parsed.students || parsed.students.length < 50) && fs.existsSync(fallback700Path)) {
+          try {
+            const fRaw = fs.readFileSync(fallback700Path, 'utf-8');
+            parsed.students = JSON.parse(fRaw);
+            this.save(parsed);
+          } catch (e) {}
+        }
+        return parsed;
       }
     } catch (err) {
       console.warn('[DATASTORE] Error reading store.json, using defaults:', err);
     }
-    this.save(DEFAULT_STORE);
-    return JSON.parse(JSON.stringify(DEFAULT_STORE));
+    const storeCopy: StoreData = JSON.parse(JSON.stringify(DEFAULT_STORE));
+    const fallback700Path = path.join(__dirname, '../../data/students_700.json');
+    if (fs.existsSync(fallback700Path)) {
+      try {
+        const fRaw = fs.readFileSync(fallback700Path, 'utf-8');
+        storeCopy.students = JSON.parse(fRaw);
+      } catch (e) {}
+    }
+    this.save(storeCopy);
+    return storeCopy;
   }
 
   private save(dataToSave?: StoreData) {
@@ -104,18 +141,27 @@ class DataStore {
     }
   }
 
-  getStudents(filter?: { class?: string; search?: string }) {
-    let list = this.data.students;
+  getStudents(filter?: { class?: string; section?: string; search?: string }) {
+    let list = this.data.students || [];
     if (filter?.class && filter.class !== 'ALL') {
-      list = list.filter((s) => s.className.toLowerCase().includes(filter.class!.toLowerCase()));
+      const c = filter.class.toLowerCase();
+      list = list.filter((s) => s.className?.toLowerCase() === c || s.className?.toLowerCase().includes(c));
+    }
+    if (filter?.section && filter.section !== 'ALL') {
+      const sec = filter.section.toUpperCase();
+      list = list.filter((s) => s.sectionName?.toUpperCase() === sec);
     }
     if (filter?.search) {
       const q = filter.search.toLowerCase();
       list = list.filter(
         (s) =>
-          s.firstName.toLowerCase().includes(q) ||
-          s.lastName.toLowerCase().includes(q) ||
-          s.admissionNo.toLowerCase().includes(q)
+          (s.firstName && s.firstName.toLowerCase().includes(q)) ||
+          (s.lastName && s.lastName.toLowerCase().includes(q)) ||
+          (`${s.firstName} ${s.lastName}`.toLowerCase().includes(q)) ||
+          (s.admissionNo && s.admissionNo.toLowerCase().includes(q)) ||
+          (s.rollNumber && s.rollNumber.toLowerCase().includes(q)) ||
+          (s.parentName && s.parentName.toLowerCase().includes(q)) ||
+          (s.parentPhone && s.parentPhone.toLowerCase().includes(q))
       );
     }
     return list;

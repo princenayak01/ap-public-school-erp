@@ -19,8 +19,25 @@ import {
   Search,
   X
 } from 'lucide-react';
+import initial700Raw from '@/data/students_700.json';
 
-const initialClassStudents: any[] = [];
+const getClassStudents = (cls: string, sec: string) => {
+  return (initial700Raw as any[])
+    .filter(
+      (s) =>
+        s.className?.toLowerCase() === cls.toLowerCase() &&
+        s.sectionName?.toUpperCase() === sec.toUpperCase()
+    )
+    .map((s) => ({
+      studentId: s.id,
+      admissionNo: s.admissionNo,
+      rollNo: s.rollNumber || '—',
+      name: `${s.firstName} ${s.lastName}`.trim(),
+      status: 'PRESENT',
+    }));
+};
+
+const initialClassStudents: any[] = getClassStudents('Class 4', 'A');
 
 export default function AttendancePage() {
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
@@ -56,29 +73,34 @@ export default function AttendancePage() {
     }
   }, []);
 
-  // Load live attendance from backend on date change
+  // Load live attendance from backend or local roster on class/section/date change
   React.useEffect(() => {
     async function loadAttendance() {
+      const defaultList = getClassStudents(selectedClass, selectedSection);
       try {
-        const res = await fetch(`/api/v1/attendance/daily-sheet?date=${attendanceDate}`);
+        const res = await fetch(`/api/v1/attendance/daily-sheet?date=${attendanceDate}&classId=${selectedClass}&section=${selectedSection}`);
         const data = await res.json();
-        if (data.success && Array.isArray(data.data)) {
-          setStudents(data.data.map((st: any) => ({
-            studentId: st.studentId || st.id,
-            admissionNo: st.admissionNo,
-            rollNo: st.rollNo || st.rollNumber,
-            name: st.name || `${st.firstName} ${st.lastName}`,
-            status: st.status || 'PRESENT',
-          })));
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const statusMap = new Map();
+          data.data.forEach((r: any) => {
+            const sid = r.studentId || r.id;
+            if (sid) statusMap.set(sid, r.status);
+          });
+          setStudents(
+            defaultList.map((st) => ({
+              ...st,
+              status: statusMap.get(st.studentId) || st.status || 'PRESENT',
+            }))
+          );
         } else {
-          setStudents([]);
+          setStudents(defaultList);
         }
       } catch (err) {
-        console.warn('Using local attendance cache');
+        setStudents(defaultList);
       }
     }
     loadAttendance();
-  }, [attendanceDate]);
+  }, [attendanceDate, selectedClass, selectedSection]);
 
   const setAllStatus = (status: 'PRESENT' | 'ABSENT' | 'LATE') => {
     setStudents((prev) => prev.map((s) => ({ ...s, status })));
@@ -92,12 +114,13 @@ export default function AttendancePage() {
 
   const saveDailyAttendance = async () => {
     setSaving(true);
+    const dynamicSectionId = `sec-${selectedClass.toLowerCase().replace(/[^a-z0-9]/g, '')}${selectedSection.toLowerCase()}`;
     try {
       const res = await fetch('/api/v1/attendance/mark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sectionId: 'sec-4a',
+          sectionId: dynamicSectionId,
           date: attendanceDate,
           records: students.map((s) => ({
             studentId: s.studentId,
@@ -118,12 +141,13 @@ export default function AttendancePage() {
   const saveBulkRangeAttendance = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    const dynamicSectionId = `sec-${selectedClass.toLowerCase().replace(/[^a-z0-9]/g, '')}${selectedSection.toLowerCase()}`;
     try {
       const res = await fetch('/api/v1/attendance/date-range', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sectionId: 'sec-4a',
+          sectionId: dynamicSectionId,
           startDate,
           endDate,
           defaultStatus: bulkStatus,

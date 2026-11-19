@@ -59,13 +59,14 @@ export class StudentController {
 
       if (!isDbOnline) {
         const students = datastore.getStudents({
-          class: req.query.classId as string,
+          class: (req.query.classId as string) || (req.query.className as string),
+          section: (req.query.section as string) || (req.query.sectionId as string) || (req.query.sectionName as string),
           search: req.query.search as string,
         });
         return res.status(200).json({
           success: true,
           data: students,
-          pagination: { total: students.length, page: 1, limit: 50, totalPages: 1 },
+          pagination: { total: students.length, page: 1, limit: 1000, totalPages: 1 },
         });
       }
 
@@ -87,13 +88,14 @@ export class StudentController {
         });
       } catch (dbErr) {
         const students = datastore.getStudents({
-          class: req.query.classId as string,
+          class: (req.query.classId as string) || (req.query.className as string),
+          section: (req.query.section as string) || (req.query.sectionId as string) || (req.query.sectionName as string),
           search: req.query.search as string,
         });
         return res.status(200).json({
           success: true,
           data: students,
-          pagination: { total: students.length, page: 1, limit: 50, totalPages: 1 },
+          pagination: { total: students.length, page: 1, limit: 1000, totalPages: 1 },
         });
       }
     } catch (err) {

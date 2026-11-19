@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
+import * as XLSX from 'xlsx';
+import initial700Raw from '@/data/students_700.json';
 import {
   GraduationCap,
   Plus,
@@ -25,7 +27,10 @@ import {
   TableProperties,
   Trash2,
   PlusCircle,
-  ShieldAlert
+  ShieldAlert,
+  ChevronLeft,
+  ChevronRight,
+  Users
 } from 'lucide-react';
 
 interface Student {
@@ -53,7 +58,18 @@ interface ManualRow {
   phone: string;
 }
 
-const initialStudents: Student[] = [];
+const initialStudents: Student[] = (initial700Raw as any[]).map((s) => ({
+  id: s.id,
+  admissionNo: s.admissionNo,
+  rollNo: s.rollNumber || '—',
+  name: `${s.firstName} ${s.lastName}`.trim(),
+  class: s.className,
+  section: s.sectionName,
+  fatherName: s.parentName,
+  phone: s.parentPhone,
+  status: s.status || 'ACTIVE',
+  gender: s.gender || 'MALE',
+}));
 
 const defaultManualRows: ManualRow[] = [
   { id: 'm-1', rollNo: '1', firstName: '', lastName: '', className: 'Class 4', sectionName: 'A', gender: 'MALE', fatherName: '', phone: '' },
@@ -66,6 +82,9 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
   const [search, setSearch] = useState('');
   const [selectedClass, setSelectedClass] = useState('ALL');
+  const [selectedSection, setSelectedSection] = useState<'ALL' | 'A' | 'B'>('ALL');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(50);
   const [showModal, setShowModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -106,7 +125,7 @@ export default function StudentsPage() {
       try {
         const res = await fetch('/api/v1/students');
         const data = await res.json();
-        if (data.success && Array.isArray(data.data)) {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           setStudents(
             data.data.map((s: any) => ({
               id: s.id,
@@ -121,11 +140,9 @@ export default function StudentsPage() {
               gender: s.gender || 'MALE',
             }))
           );
-        } else {
-          setStudents([]);
         }
       } catch (err) {
-        setStudents([]);
+        console.warn('Using bundled 700 students roster cache.');
       }
     }
     loadStudents();
@@ -323,13 +340,79 @@ export default function StudentsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      setBulkCsvText(content);
-      parseCsvText(content);
-    };
-    reader.readAsText(file);
+    setErrorMsg('');
+    const fileName = file.name.toLowerCase();
+
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const buffer = event.target?.result as ArrayBuffer;
+          const workbook = XLSX.read(new Uint8Array(buffer), { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const rows: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+          if (!rows || rows.length === 0) {
+            setErrorMsg('Excel sheet khali hai ya koi row detect nahi hui.');
+            return;
+          }
+
+          const parsed = rows.map((r: any, idx: number) => {
+            const keys = Object.keys(r);
+            const findVal = (terms: string[]) => {
+              for (const k of keys) {
+                const cleanKey = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                for (const t of terms) {
+                  if (cleanKey.includes(t)) return String(r[k]).trim();
+                }
+              }
+              return '';
+            };
+
+            const rollNo = findVal(['rollno', 'roll', 'sno', 'sn']) || String(students.length + idx + 1);
+            const name = findVal(['studentname', 'name', 'fullname', 'student']) || `Student ${idx + 1}`;
+            const parts = name.split(' ');
+            const firstName = findVal(['firstname', 'first']) || parts[0] || 'Student';
+            const lastName = findVal(['lastname', 'last', 'surname']) || (parts.length > 1 ? parts.slice(1).join(' ') : 'Kumar');
+            const className = findVal(['class', 'grade', 'standard']) || (selectedClass !== 'ALL' ? selectedClass : 'Class 4');
+            const sectionName = findVal(['section', 'sec']) || (selectedSection !== 'ALL' ? selectedSection : (idx % 2 === 0 ? 'A' : 'B'));
+            const genderVal = findVal(['gender', 'sex']).toUpperCase();
+            const gender = genderVal.startsWith('F') ? 'FEMALE' : 'MALE';
+            const fatherName = findVal(['father', 'parent', 'guardian']) || 'Parent Guardian';
+            const phone = findVal(['phone', 'mobile', 'contact']) || '+91-9876543210';
+            const dob = findVal(['dob', 'birth', 'dateofbirth']) || '2016-05-15';
+
+            return {
+              rollNo,
+              name: `${firstName} ${lastName}`.trim(),
+              firstName,
+              lastName,
+              className,
+              sectionName,
+              gender,
+              fatherName,
+              phone,
+              dob,
+            };
+          });
+
+          setParsedBulkStudents(parsed);
+          setSuccessMsg(`Excel File "${file.name}" successfully parsed! ${parsed.length} students loaded.`);
+        } catch (err: any) {
+          setErrorMsg('Excel file read karne me error: ' + (err.message || 'Invalid format'));
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        setBulkCsvText(content);
+        parseCsvText(content);
+      };
+      reader.readAsText(file);
+    }
   };
 
   const handleDownloadSampleCsv = () => {
@@ -553,14 +636,21 @@ export default function StudentsPage() {
   };
 
   const filtered = students.filter((s) => {
-    const matchClass = selectedClass === 'ALL' || s.class === selectedClass;
+    const matchClass = selectedClass === 'ALL' || s.class?.toLowerCase() === selectedClass.toLowerCase() || s.class?.toLowerCase().includes(selectedClass.toLowerCase());
+    const matchSection = selectedSection === 'ALL' || s.section?.toUpperCase() === selectedSection.toUpperCase();
+    const q = search.toLowerCase().trim();
     const matchSearch =
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.admissionNo.toLowerCase().includes(search.toLowerCase()) ||
-      s.fatherName.toLowerCase().includes(search.toLowerCase()) ||
-      String(s.rollNo).includes(search);
-    return matchClass && matchSearch;
+      !q ||
+      s.name.toLowerCase().includes(q) ||
+      s.admissionNo.toLowerCase().includes(q) ||
+      s.fatherName.toLowerCase().includes(q) ||
+      String(s.rollNo).toLowerCase().includes(q) ||
+      (s.phone && s.phone.includes(q));
+    return matchClass && matchSection && matchSearch;
   });
+
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  const paginatedStudents = pageSize === 0 ? filtered : filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   if (activeRole === 'PARENT') {
     return (
@@ -678,68 +768,129 @@ export default function StudentsPage() {
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Grade Range</span>
               <div className="flex items-baseline space-x-2 mt-1">
-                <span className="text-xl font-extrabold text-indigo-950">Nursery – 8</span>
-                <span className="text-xs text-slate-400 font-semibold">CBSE Curriculum</span>
+                <span className="text-xl font-extrabold text-indigo-950">Nursery – Class 8</span>
+                <span className="text-xs text-slate-400 font-semibold">11 Classes</span>
               </div>
             </div>
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Teacher Permissions</span>
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sections</span>
               <div className="flex items-baseline space-x-2 mt-1">
-                <span className="text-sm font-bold text-teal-700">Column Data Save</span>
-                <span className="text-[11px] text-teal-600 font-bold">Enabled</span>
+                <span className="text-xl font-extrabold text-teal-700">22 Sections</span>
+                <span className="text-xs text-teal-600 font-bold">(Section A & B)</span>
               </div>
             </div>
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">School Code</span>
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Avg Per Section</span>
               <div className="flex items-baseline space-x-2 mt-1">
-                <span className="text-sm font-mono font-bold text-slate-800">2130000</span>
-                <span className="text-[11px] text-slate-400">Baruasagar, Jhansi</span>
+                <span className="text-xl font-extrabold text-amber-700">~32 Students</span>
+                <span className="text-xs text-slate-400 font-semibold">Balanced Roster</span>
               </div>
             </div>
           </div>
 
-          {/* Filter & Search Bar */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative w-full sm:w-80">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              <input
-                type="text"
-                placeholder="Search student, roll no, admission no..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-              />
+          {/* Filter & Search Bar with Class & Section Tabs */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+              <div className="relative w-full md:w-96">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  placeholder="Search student, roll no, adm no, phone, father name..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+                {/* Section Filter Pills */}
+                <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+                  {(['ALL', 'A', 'B'] as const).map((sec) => (
+                    <button
+                      key={sec}
+                      type="button"
+                      onClick={() => {
+                        setSelectedSection(sec);
+                        setCurrentPage(1);
+                      }}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        selectedSection === sec
+                          ? 'bg-amber-400 text-slate-950 shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {sec === 'ALL' ? 'All Sections' : `Section ${sec}`}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Page Size Selector */}
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer"
+                >
+                  <option value={25}>25 per page</option>
+                  <option value={50}>50 per page</option>
+                  <option value={100}>100 per page</option>
+                  <option value={0}>Show All (700)</option>
+                </select>
+
+                <button
+                  onClick={exportCurrentRoster}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center space-x-1 transition-colors cursor-pointer"
+                  title="Download current roster as CSV"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export CSV</span>
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-semibold text-slate-500">Filter Grade:</span>
-              <select
-                value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer"
-              >
-                <option value="ALL">All Grades (Nursery - 8)</option>
-                <option value="Nursery">Nursery</option>
-                <option value="LKG">LKG</option>
-                <option value="UKG">UKG</option>
-                <option value="Class 1">Class 1</option>
-                <option value="Class 2">Class 2</option>
-                <option value="Class 3">Class 3</option>
-                <option value="Class 4">Class 4</option>
-                <option value="Class 5">Class 5</option>
-                <option value="Class 6">Class 6</option>
-                <option value="Class 7">Class 7</option>
-                <option value="Class 8">Class 8</option>
-              </select>
-
-              <button
-                onClick={exportCurrentRoster}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center space-x-1 transition-colors cursor-pointer"
-                title="Download current roster as CSV"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export CSV</span>
-              </button>
+            {/* Quick Class / Grade Selection Pills */}
+            <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
+                Class:
+              </span>
+              {[
+                'ALL',
+                'Nursery',
+                'LKG',
+                'UKG',
+                'Class 1',
+                'Class 2',
+                'Class 3',
+                'Class 4',
+                'Class 5',
+                'Class 6',
+                'Class 7',
+                'Class 8',
+              ].map((c) => {
+                const isActive = selectedClass === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      setSelectedClass(c);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-teal-700 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {c === 'ALL' ? 'All Classes (Nursery–8)' : c}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -827,7 +978,7 @@ export default function StudentsPage() {
                       </td>
                     </tr>
                   ) : (
-                    filtered.map((s) => (
+                    paginatedStudents.map((s) => (
                       <tr key={s.id} className="hover:bg-slate-50/70 transition-colors">
                         {/* Editable Roll Number */}
                         <td className="py-3 px-3 text-center">
@@ -906,6 +1057,69 @@ export default function StudentsPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {filtered.length > 0 && pageSize > 0 && (
+              <div className="p-4 bg-slate-50 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="text-xs text-slate-500 font-medium">
+                  Showing <span className="font-bold text-slate-800">{(currentPage - 1) * pageSize + 1}</span> to{' '}
+                  <span className="font-bold text-slate-800">
+                    {Math.min(currentPage * pageSize, filtered.length)}
+                  </span>{' '}
+                  of <span className="font-bold text-slate-900">{filtered.length}</span> students
+                  {selectedClass !== 'ALL' && <span className="text-teal-700 font-semibold"> • {selectedClass}</span>}
+                  {selectedSection !== 'ALL' && <span className="text-amber-700 font-semibold"> • Section {selectedSection}</span>}
+                </div>
+
+                <div className="flex items-center space-x-1.5">
+                  <button
+                    type="button"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    title="Previous Page"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {Array.from({ length: Math.min(totalPages, 7) }, (_, idx) => {
+                    let pageNum = idx + 1;
+                    if (totalPages > 7) {
+                      if (currentPage > 4) {
+                        pageNum = currentPage - 3 + idx;
+                        if (pageNum > totalPages) pageNum = totalPages - (6 - idx);
+                      }
+                    }
+                    if (pageNum < 1 || pageNum > totalPages) return null;
+                    const isActive = pageNum === currentPage;
+                    return (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-teal-700 text-white shadow-xs'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    title="Next Page"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* BULK UPLOAD & MANUAL COLUMN-WISE DATA MODAL */}
@@ -1229,10 +1443,10 @@ export default function StudentsPage() {
                         Supports .csv format with headers: rollNo, firstName, lastName, className, sectionName, gender, fatherName, parentPhone
                       </p>
                       <label className="mt-4 inline-block px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs cursor-pointer shadow-sm transition-all">
-                        Choose CSV File
+                        Choose Excel (.xlsx) / CSV File
                         <input
                           type="file"
-                          accept=".csv,.txt"
+                          accept=".xlsx,.xls,.csv,.txt"
                           onChange={handleFileUpload}
                           className="hidden"
                         />
