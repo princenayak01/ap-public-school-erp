@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, Clock, LogOut, ShieldCheck } from 'lucide-react';
+import { Calendar, Clock, LogOut, ShieldCheck, UserCog } from 'lucide-react';
+import PrincipalProfileModal from './PrincipalProfileModal';
 
 export default function Navbar({ title = 'School ERP Management' }: { title?: string }) {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
   const [dateStr, setDateStr] = useState<string>('');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [role, setRole] = useState<'TEACHER' | 'PARENT' | 'PRINCIPAL'>('PRINCIPAL');
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   useEffect(() => {
     const updateTime = () => {
@@ -77,24 +79,40 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
         </span>
 
         {/* User Profile Pill */}
-        <div className="flex items-center space-x-2.5 pl-1">
+        <div
+          onClick={() => {
+            if (role === 'PRINCIPAL') setShowProfileModal(true);
+          }}
+          className={`flex items-center space-x-2.5 pl-1 ${role === 'PRINCIPAL' ? 'cursor-pointer hover:opacity-85 p-1 rounded-xl transition-all' : ''}`}
+          title={role === 'PRINCIPAL' ? 'Click to Edit Principal Profile & Credentials' : undefined}
+        >
           <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs text-white shadow-xs ${
             role === 'TEACHER' ? 'bg-amber-600' :
             role === 'PARENT' ? 'bg-teal-600' :
-            'bg-indigo-900'
+            'bg-indigo-900 ring-2 ring-indigo-300'
           }`}>
             {currentUser?.name?.[0] || (role === 'TEACHER' ? 'T' : role === 'PARENT' ? 'P' : 'A')}
           </div>
 
           <div className="hidden sm:block text-left">
-            <div className="text-xs font-extrabold text-slate-800 leading-tight">
-              {currentUser?.name || (role === 'TEACHER' ? 'Sunita Sharma' : role === 'PARENT' ? 'Vikas Sharma' : 'Dr. R. K. Sharma')}
+            <div className="text-xs font-extrabold text-slate-800 leading-tight flex items-center space-x-1">
+              <span>{currentUser?.name || (role === 'TEACHER' ? 'Sunita Sharma' : role === 'PARENT' ? 'Vikas Sharma' : 'Dr. R. K. Sharma')}</span>
+              {role === 'PRINCIPAL' && <UserCog className="w-3 h-3 text-indigo-600 inline" />}
             </div>
             <div className="text-[10px] text-slate-500 font-semibold">
-              {role === 'TEACHER' ? 'Class Incharge' : role === 'PARENT' ? 'Guardian' : 'Super Administrator'}
+              {role === 'TEACHER' ? 'Class Incharge' : role === 'PARENT' ? 'Guardian' : 'Super Administrator (Edit)'}
             </div>
           </div>
         </div>
+
+        {/* Principal Profile Modal */}
+        {role === 'PRINCIPAL' && (
+          <PrincipalProfileModal
+            isOpen={showProfileModal}
+            onClose={() => setShowProfileModal(false)}
+            onProfileUpdated={(updated) => setCurrentUser(updated)}
+          />
+        )}
 
         {/* Logout Quick Button */}
         <button
