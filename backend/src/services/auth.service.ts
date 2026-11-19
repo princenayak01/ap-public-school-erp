@@ -116,7 +116,7 @@ export class AuthService {
       return this.unavailable('Authentication database is unavailable. Token refresh is temporarily disabled.');
     }
 
-    let decoded;
+    let decoded: ReturnType<typeof verifyRefreshToken>;
     try {
       decoded = verifyRefreshToken(oldRefreshToken);
     } catch {
