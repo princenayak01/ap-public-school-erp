@@ -175,7 +175,7 @@ router.post(
   recordAuditLog('MARK_DAILY_ATTENDANCE', 'Attendance'),
   AttendanceController.markDaily
 );
-router.post('/attendance/mark', authenticateJWT, AttendanceController.markDaily);
+router.post('/attendance/mark', authenticateJWT, authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), AttendanceController.markDaily);
 
 router.post(
   '/attendance/bulk-range',
@@ -184,7 +184,7 @@ router.post(
   recordAuditLog('BULK_ATTENDANCE_RANGE', 'Attendance'),
   AttendanceController.bulkRange
 );
-router.post('/attendance/date-range', authenticateJWT, AttendanceController.bulkRange);
+router.post('/attendance/date-range', authenticateJWT, authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AttendanceController.bulkRange);
 
 router.get(
   '/attendance/daily-sheet',
