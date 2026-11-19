@@ -29,6 +29,39 @@ router.post('/auth/refresh', AuthController.refresh);
 router.get('/auth/me', authenticateJWT, AuthController.me);
 
 // Default-deny anonymous access for every route declared below this point.
+// ==========================================
+// 9. Public School Info & Metadata
+// ==========================================
+router.get('/school/info', requireDatabase, async (req, res, next) => {
+  try {
+    const setting = await prisma.schoolSetting.findFirst();
+    const academicYears = await prisma.academicYear.findMany({ orderBy: { startDate: 'desc' } });
+    const classes = await prisma.class.findMany({
+      include: { sections: true, subjects: true },
+      orderBy: { numericOrder: 'asc' },
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        setting: setting || {
+          schoolName: 'A. P PUBLIC SCHOOL',
+          board: 'CBSE',
+          location: 'Jhansi, Uttar Pradesh, India',
+          academicSession: '2026-27',
+          classes: 'Nursery to Class 8',
+          currency: 'INR (₹)',
+        },
+        academicYears,
+        classes,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 router.use(authenticateJWT);
 router.use(requireDatabase);
 
@@ -266,36 +299,5 @@ router.get(
 // ==========================================
 router.post('/ai/ask', authenticateJWT, AIController.ask);
 
-// ==========================================
-// 9. Public School Info & Metadata
-// ==========================================
-router.get('/school/info', async (req, res, next) => {
-  try {
-    const setting = await prisma.schoolSetting.findFirst();
-    const academicYears = await prisma.academicYear.findMany({ orderBy: { startDate: 'desc' } });
-    const classes = await prisma.class.findMany({
-      include: { sections: true, subjects: true },
-      orderBy: { numericOrder: 'asc' },
-    });
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        setting: setting || {
-          schoolName: 'A. P PUBLIC SCHOOL',
-          board: 'CBSE',
-          location: 'Jhansi, Uttar Pradesh, India',
-          academicSession: '2026-27',
-          classes: 'Nursery to Class 8',
-          currency: 'INR (₹)',
-        },
-        academicYears,
-        classes,
-      },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
 
 export default router;
