@@ -47,7 +47,6 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
           currentEmailOrPhone: phone,
           newEmail: email.trim(),
           newPassword: password.trim() || undefined,
-          otp: 'DIRECT_ADMIN', // accepted or verified
         }),
       });
 

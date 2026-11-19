@@ -107,83 +107,17 @@ export class AuthService {
   private static otpStore: Record<string, { code: string; expiresAt: number }> = {};
 
   static async sendOtp(phone: string, email?: string) {
-    const cleanInput = phone.trim();
-    const cleanDigits = phone.replace(/[^0-9]/g, '');
-    if (!cleanDigits && !email) {
-      throw { status: 400, message: 'Valid mobile number is required to send 1-time OTP.' };
-    }
-
-    // Generate 6-digit OTP
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-    this.otpStore[cleanInput] = { code, expiresAt };
-    this.otpStore[cleanDigits] = { code, expiresAt };
-    if (cleanDigits.length === 10) {
-      this.otpStore['91' + cleanDigits] = { code, expiresAt };
-      this.otpStore['+91' + cleanDigits] = { code, expiresAt };
-    } else if (cleanDigits.startsWith('91')) {
-      this.otpStore[cleanDigits.substring(2)] = { code, expiresAt };
-    }
-    if (email) {
-      this.otpStore[email.toLowerCase().trim()] = { code, expiresAt };
-    }
-
-    // Trigger WhatsApp notification for Principal OTP verification
-    try {
-      await WhatsAppService.sendAuthOtp(cleanDigits || cleanInput, code);
-    } catch (waErr) {
-      console.warn('[WHATSAPP_DISPATCH] WhatsApp message queued/logged for:', cleanInput);
-    }
-
-    console.log(`[SMS & WHATSAPP GATEWAY • A. P PUBLIC SCHOOL] 1-Time OTP for ${cleanInput}: ${code}`);
-
     return {
       success: true,
-      phone: cleanInput,
-      message: `1-Time OTP successfully sent to your registered contact (${cleanInput}). Valid for 10 minutes.`,
-      otp: code,
+      message: 'Direct verification active. OTP not required.',
     };
   }
 
   static async verifyOtp(phone: string, otp: string) {
-    const cleanInput = phone.trim();
-    const cleanDigits = phone.replace(/[^0-9]/g, '');
-    const cleanOtp = (otp || '').trim();
-
-    // Universal bypasses for seamless testing & direct admin clearance
-    if (cleanOtp === '734801' || cleanOtp === '123456' || cleanOtp === 'DIRECT_ADMIN') {
-      return {
-        success: true,
-        verified: true,
-        message: '1-Time OTP successfully verified.',
-      };
-    }
-
-    const entry =
-      this.otpStore[cleanInput] ||
-      this.otpStore[cleanDigits] ||
-      (cleanDigits.length === 10 ? this.otpStore['91' + cleanDigits] : null) ||
-      (cleanDigits.startsWith('91') ? this.otpStore[cleanDigits.substring(2)] : null);
-
-    if (!entry) {
-      throw { status: 400, message: 'No OTP requested for this phone number or OTP expired. Please send OTP again.' };
-    }
-
-    if (Date.now() > entry.expiresAt) {
-      delete this.otpStore[cleanInput];
-      delete this.otpStore[cleanDigits];
-      throw { status: 400, message: 'OTP has expired. Please request a new 1-time OTP.' };
-    }
-
-    if (entry.code !== cleanOtp) {
-      throw { status: 400, message: 'Invalid OTP code. Please enter the correct 6-digit code.' };
-    }
-
     return {
       success: true,
       verified: true,
-      message: '1-Time OTP successfully verified.',
+      message: 'Direct verification active. OTP not required.',
     };
   }
 
@@ -196,15 +130,9 @@ export class AuthService {
     assignedClass: string;
     assignedSection: string;
     subject?: string;
-    otp?: string;
   }) {
     if (!data.name || !data.phone || !data.password) {
       throw { status: 400, message: 'Name, phone number, and password are required.' };
-    }
-
-    // If OTP provided, verify it
-    if (data.otp) {
-      await this.verifyOtp(data.phone, data.otp);
     }
 
     const userData = {
@@ -217,7 +145,6 @@ export class AuthService {
       className: data.assignedClass || 'Class 4',
       sectionName: data.assignedSection || 'A',
       subject: data.subject || 'All Subjects',
-      otpVerified: true,
       status: 'PENDING_APPROVAL',
     };
 
@@ -226,7 +153,7 @@ export class AuthService {
     return {
       success: true,
       pendingApproval: true,
-      message: 'Class Teacher registered successfully with 1-Time OTP verification! Account is pending School Admin / Principal approval before login.',
+      message: 'Class Teacher registered successfully! Account is pending School Admin / Principal approval before login.',
       user: saved,
     };
   }
@@ -429,15 +356,8 @@ export class AuthService {
     currentEmailOrPhone: string;
     newEmail?: string;
     newPassword?: string;
-    otp: string;
+    otp?: string;
   }) {
-    if (!data.otp) {
-      throw { status: 400, message: 'Real-time 6-digit OTP verification is required to update credentials.' };
-    }
-
-    // Verify OTP sent to current registered email / phone
-    await this.verifyOtp(data.currentEmailOrPhone, data.otp);
-
     if (!data.newEmail && !data.newPassword) {
       throw { status: 400, message: 'Please provide either a new Email or a new Password to update.' };
     }
@@ -475,7 +395,7 @@ export class AuthService {
 
     return {
       success: true,
-      message: 'Principal credentials updated successfully via 2-Step OTP Verification!',
+      message: 'Principal credentials updated successfully!',
       updatedEmail: target.email,
     };
   }

@@ -39,13 +39,6 @@ export default function RegisterPage() {
     subject: 'Mathematics & Science',
   });
 
-  // OTP State for Class Teacher
-  const [otpSent, setOtpSent] = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState('');
-  const [enteredOtp, setEnteredOtp] = useState('');
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [sendingOtp, setSendingOtp] = useState(false);
-
   // Status & Completion State
   const [loading, setLoading] = useState(false);
   const [registeredPendingUser, setRegisteredPendingUser] = useState<any | null>(null);
@@ -56,53 +49,10 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Step 1: Send 1-Time OTP to Teacher's Mobile
-  const handleSendOtp = async () => {
-    if (!formData.phone || formData.phone.length < 10) {
-      setError('Kripya valid 10-digit mobile number enter karein OTP prapt karne ke liye.');
-      return;
-    }
-    setError('');
-    setSendingOtp(true);
-
-    try {
-      const res = await fetch('/api/v1/auth/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: formData.phone, email: formData.email }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOtpSent(true);
-        setGeneratedOtp(data.otp);
-        setSuccess(`1-Time OTP successfully sent to ${formData.phone}!`);
-      } else {
-        setError(data.message || 'OTP send karne me samasya aayi.');
-      }
-    } catch (e) {
-      setError('Server se connect nahi ho paya. Kripya check karein.');
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
-  // Step 2: Register Teacher with OTP & Submit for Admin Approval
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-    // Teacher requires OTP verification
-    if (role === 'TEACHER') {
-      if (!otpSent) {
-        setError('Pehle "Send 1-Time OTP" par click karein aur OTP verify karein.');
-        return;
-      }
-      if (!enteredOtp || enteredOtp.length !== 6) {
-        setError('Kripya 6-digit OTP code enter karein.');
-        return;
-      }
-    }
 
     setLoading(true);
 
@@ -129,7 +79,6 @@ export default function RegisterPage() {
           assignedClass: formData.className,
           assignedSection: formData.sectionName,
           subject: formData.subject,
-          otp: enteredOtp,
         };
       } else if (role === 'STUDENT') {
         payload.rollNumber = formData.rollNumber || '1';
@@ -189,7 +138,7 @@ export default function RegisterPage() {
 
             <div>
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-wider">
-                1-Time OTP Verified • Pending Admin Approval
+                Registration Submitted • Pending Admin Approval
               </span>
               <h2 className="text-lg font-black text-white mt-2">
                 Teacher Registration Submitted!
@@ -215,10 +164,6 @@ export default function RegisterPage() {
               <div className="flex justify-between">
                 <span className="text-slate-400">Registered Mobile:</span>
                 <span className="font-bold text-slate-200">{registeredPendingUser.phone}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">OTP Status:</span>
-                <span className="text-emerald-400 font-bold">✓ 1-Time OTP Verified</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Approval Status:</span>
@@ -364,75 +309,22 @@ export default function RegisterPage() {
 
                 <div className={role !== 'TEACHER' ? 'sm:col-span-2' : ''}>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Mobile Phone Number (For 1-Time OTP) *
+                    Mobile Phone Number *
                   </label>
-                  <div className="relative flex space-x-2">
-                    <div className="relative flex-1">
-                      <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                        className="w-full pl-10 pr-3 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-teal-500 transition-all placeholder-slate-500"
-                        placeholder="e.g. 9876543210"
-                      />
-                    </div>
-                    {role === 'TEACHER' && (
-                      <button
-                        type="button"
-                        onClick={handleSendOtp}
-                        disabled={sendingOtp}
-                        className="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 transition-all shadow-md"
-                      >
-                        {sendingOtp ? 'Sending...' : otpSent ? 'Resend OTP' : 'Send 1-Time OTP'}
-                      </button>
-                    )}
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-10 pr-3 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-teal-500 transition-all placeholder-slate-500"
+                      placeholder="e.g. 9876543210"
+                    />
                   </div>
                 </div>
               </div>
-
-              {/* 1-Time OTP Verification Section (For Class Teacher) */}
-              {role === 'TEACHER' && (
-                <div className={`p-4 rounded-2xl border transition-all ${otpSent ? 'bg-amber-950/40 border-amber-500/50' : 'bg-slate-900 border-slate-800'}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <KeyRound className="w-4 h-4 text-amber-400" />
-                      <span className="text-xs font-bold text-amber-300">1-Time OTP Verification</span>
-                    </div>
-                    {otpSent && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
-                        OTP Active
-                      </span>
-                    )}
-                  </div>
-
-                  {otpSent ? (
-                    <div className="space-y-2">
-                      <div className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 text-amber-200 text-xs flex items-center justify-between">
-                        <span>Demo OTP Code: <strong className="font-mono text-base text-amber-300 tracking-wider ml-1">{generatedOtp}</strong></span>
-                        <span className="text-[10px] text-slate-400">Valid for 10 min</span>
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-semibold text-slate-300 mb-1">Enter 6-Digit OTP Received on Mobile</label>
-                        <input
-                          type="text"
-                          maxLength={6}
-                          value={enteredOtp}
-                          onChange={(e) => setEnteredOtp(e.target.value.replace(/[^0-9]/g, ''))}
-                          className="w-full text-center text-lg tracking-[0.4em] font-mono py-2 rounded-xl bg-slate-950 border border-amber-500/60 text-white focus:outline-none focus:ring-1 focus:ring-amber-400"
-                          placeholder="______"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-slate-400">
-                      Class teacher registration secure karne ke liye pehle apna mobile number enter karein aur &apos;Send 1-Time OTP&apos; dabayein.
-                    </p>
-                  )}
-                </div>
-              )}
 
               {/* Class & Section Assignment */}
               <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/20 space-y-3">
@@ -501,7 +393,7 @@ export default function RegisterPage() {
                   {loading
                     ? 'Submitting & Saving...'
                     : role === 'TEACHER'
-                    ? 'Verify OTP & Submit for Admin Approval'
+                    ? 'Submit for Admin Approval'
                     : `Register as ${role}`}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5" />
