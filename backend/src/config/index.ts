@@ -14,6 +14,10 @@ if (accessSecret === refreshSecret) {
   throw new Error('JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be different values.');
 }
 
+if (process.env.NODE_ENV === 'production' && !process.env.CLIENT_ORIGIN) {
+  throw new Error('CLIENT_ORIGIN must be configured explicitly in production.');
+}
+
 const clientOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:3000')
   .split(',')
   .map((origin) => origin.trim())
