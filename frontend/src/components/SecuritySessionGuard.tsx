@@ -2,154 +2,139 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ShieldCheck, Lock, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, Lock } from 'lucide-react';
 
 export default function SecuritySessionGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [authorized, setAuthorized] = useState<boolean>(false);
-  const [checking, setChecking] = useState<boolean>(true);
+  const [authorized, setAuthorized] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Public routes (landing, login portals, registration) require no session check
     if (!pathname || !pathname.startsWith('/dashboard')) {
       setAuthorized(true);
       setChecking(false);
       return;
     }
 
+    let active = true;
+    let cleanupSession = () => {};
+    setAuthorized(false);
     setChecking(true);
 
-    // 1. Strict Credential Verification
-    const token = localStorage.getItem('apps_token');
-    const storedUser = localStorage.getItem('apps_user');
+    const wipeAndRedirect = (destination: string) => {
+      localStorage.removeItem('apps_token');
+      localStorage.removeItem('apps_user');
+      localStorage.removeItem('apps_active_role');
+      sessionStorage.clear();
+      if (active) {
+        setAuthorized(false);
+        setChecking(false);
+      }
+      window.location.replace(destination);
+    };
 
-    if (!token || !storedUser) {
-      console.warn('[SECURITY GUARD] Access Denied: Unauthenticated visitor blocked from', pathname);
-      wipeAndRedirect('/login');
-      return;
-    }
+    const verifySession = async () => {
+      const token = localStorage.getItem('apps_token');
+      const storedUserRaw = localStorage.getItem('apps_user');
 
-    let user: any = null;
-    try {
-      user = JSON.parse(storedUser);
-    } catch (e) {
-      console.warn('[SECURITY GUARD] Corrupt session token detected. Wiping...');
-      wipeAndRedirect('/login');
-      return;
-    }
+      if (!token || !storedUserRaw) {
+        wipeAndRedirect('/login');
+        return;
+      }
 
-    if (!user || !user.role) {
-      wipeAndRedirect('/login');
-      return;
-    }
+      let storedUser: any;
+      try {
+        storedUser = JSON.parse(storedUserRaw);
+      } catch {
+        wipeAndRedirect('/login');
+        return;
+      }
 
-    const role = user.role.toUpperCase();
+      if (!storedUser?.id) {
+        wipeAndRedirect('/login');
+        return;
+      }
 
-    // 2. Strict Role-Based Access Control (RBAC)
-    // A. Principal Master Dashboard & Sensitive Admin Controls
-    if (pathname.startsWith('/dashboard/principal')) {
-      if (role !== 'PRINCIPAL' && role !== 'SCHOOL_ADMIN') {
-        console.warn(`[SECURITY GUARD] Unauthorized access attempt to Principal Control by ${role}. Redirecting...`);
-        if (role === 'TEACHER') {
-          window.location.replace('/dashboard/teacher');
-        } else if (role === 'PARENT') {
-          window.location.replace('/dashboard/parent');
-        } else {
+      try {
+        // The API, not localStorage, is the authority for identity and role.
+        const response = await fetch('/api/v1/auth/me', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
           wipeAndRedirect('/login');
+          return;
         }
-        return;
-      }
-    }
 
-    // B. Teacher Dashboard
-    if (pathname.startsWith('/dashboard/teacher')) {
-      if (role !== 'TEACHER' && role !== 'PRINCIPAL') {
-        console.warn(`[SECURITY GUARD] Blocked from Teacher Dashboard: Current role is ${role}`);
-        if (role === 'PARENT') {
-          window.location.replace('/dashboard/parent');
-        } else {
+        const result = await response.json();
+        const user = result?.data;
+        if (!user?.id || user.id !== storedUser.id || !user.role) {
+          wipeAndRedirect('/login');
+          return;
+        }
+
+        if (!active) return;
+        localStorage.setItem('apps_user', JSON.stringify(user));
+        const role = String(user.role).toUpperCase();
+
+        if (pathname.startsWith('/dashboard/principal') && !['PRINCIPAL', 'SCHOOL_ADMIN'].includes(role)) {
+          wipeAndRedirect('/login');
+          return;
+        }
+        if (pathname.startsWith('/dashboard/teacher') && !['TEACHER', 'PRINCIPAL', 'SCHOOL_ADMIN'].includes(role)) {
           wipeAndRedirect('/login/teacher');
+          return;
         }
-        return;
-      }
-    }
-
-    // C. Parent Dashboard
-    if (pathname.startsWith('/dashboard/parent')) {
-      if (role !== 'PARENT' && role !== 'PRINCIPAL') {
-        console.warn(`[SECURITY GUARD] Blocked from Parent Portal: Current role is ${role}`);
-        if (role === 'TEACHER') {
-          window.location.replace('/dashboard/teacher');
-        } else {
+        if (pathname.startsWith('/dashboard/parent') && !['PARENT', 'PRINCIPAL'].includes(role)) {
           wipeAndRedirect('/login/parent');
+          return;
         }
-        return;
-      }
-    }
+        if (pathname.startsWith('/dashboard/fees') && role === 'TEACHER') {
+          wipeAndRedirect('/dashboard/teacher');
+          return;
+        }
 
-    // D. Fees & Financial Ledger (Strictly Principal or Parent for Ward Dues)
-    if (pathname.startsWith('/dashboard/fees')) {
-      if (role === 'TEACHER') {
-        // Teachers have no access to school fee collections or parent ledgers
-        window.location.replace('/dashboard/teacher');
-        return;
-      }
-    }
+        setAuthorized(true);
+        setChecking(false);
 
-    // User is fully authenticated and role-authorized
-    setAuthorized(true);
-    setChecking(false);
+        window.history.pushState({ protected: true }, '', window.location.href);
+        const onPopState = () => wipeAndRedirect('/login');
 
-    // 3. Back-Button Navigation Security Trap
-    window.history.pushState({ protected: true }, '', window.location.href);
+        let inactivityTimer: ReturnType<typeof setTimeout>;
+        const resetTimer = () => {
+          clearTimeout(inactivityTimer);
+          inactivityTimer = setTimeout(() => wipeAndRedirect('/login'), 15 * 60 * 1000);
+        };
+        const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+        activityEvents.forEach((eventName) => window.addEventListener(eventName, resetTimer));
+        resetTimer();
 
-    const onPopState = () => {
-      console.warn('[SECURITY GUARD] Back button intercepted. Terminating session for security...');
-      wipeAndRedirect('/login');
-    };
+        const onStorageChange = (event: StorageEvent) => {
+          if (event.key === 'apps_token' && !event.newValue) wipeAndRedirect('/login');
+        };
+        window.addEventListener('popstate', onPopState);
+        window.addEventListener('storage', onStorageChange);
 
-    window.addEventListener('popstate', onPopState);
-
-    // 4. Inactivity Auto-Logout Timer (15 Minutes)
-    let inactivityTimer: NodeJS.Timeout;
-    const resetTimer = () => {
-      clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(() => {
-        console.warn('[SECURITY GUARD] Session expired due to 15-minute inactivity.');
-        wipeAndRedirect('/login');
-      }, 15 * 60 * 1000);
-    };
-
-    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    activityEvents.forEach((ev) => window.addEventListener(ev, resetTimer));
-    resetTimer();
-
-    // 5. Cross-Tab Logout Synchronization
-    const onStorageChange = (e: StorageEvent) => {
-      if (e.key === 'apps_token' && !e.newValue) {
+        cleanupSession = () => {
+          window.removeEventListener('popstate', onPopState);
+          window.removeEventListener('storage', onStorageChange);
+          clearTimeout(inactivityTimer);
+          activityEvents.forEach((eventName) => window.removeEventListener(eventName, resetTimer));
+        };
+      } catch {
         wipeAndRedirect('/login');
       }
     };
-    window.addEventListener('storage', onStorageChange);
 
+    void verifySession();
     return () => {
-      window.removeEventListener('popstate', onPopState);
-      clearTimeout(inactivityTimer);
-      activityEvents.forEach((ev) => window.removeEventListener(ev, resetTimer));
-      window.removeEventListener('storage', onStorageChange);
+      active = false;
+      cleanupSession();
     };
   }, [pathname]);
 
-  const wipeAndRedirect = (destination: string) => {
-    localStorage.removeItem('apps_token');
-    localStorage.removeItem('apps_user');
-    localStorage.removeItem('apps_active_role');
-    sessionStorage.clear();
-    setAuthorized(false);
-    window.location.replace(destination);
-  };
-
-  // If on a protected route and not yet confirmed authorized, show security verification screen
   if (pathname && pathname.startsWith('/dashboard') && (!authorized || checking)) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white font-sans">
@@ -161,7 +146,7 @@ export default function SecuritySessionGuard({ children }: { children: React.Rea
         </h2>
         <p className="text-xs text-slate-400 font-mono flex items-center space-x-1.5">
           <Lock className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Verifying Institutional Security Clearance...</span>
+          <span>Verifying server-authorized session...</span>
         </p>
       </div>
     );
