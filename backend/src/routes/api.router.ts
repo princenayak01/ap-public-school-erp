@@ -74,14 +74,14 @@ router.post(
 router.get(
   '/students',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   StudentController.list
 );
 
 router.get(
   '/students/:id',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   StudentController.getById
 );
 
@@ -242,7 +242,7 @@ router.post(
   ExamController.generateReportCards
 );
 
-router.get('/exams/report-card/:reportCardId/pdf', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), ExamController.downloadReportCard);
+router.get('/exams/report-card/:reportCardId/pdf', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), ExamController.downloadReportCard);
 
 // ==========================================
 // 7. Parent Portal Routes
