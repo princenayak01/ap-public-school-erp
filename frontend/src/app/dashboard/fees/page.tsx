@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -97,7 +99,7 @@ export default function FeesPage() {
 
     async function loadInvoices() {
       try {
-        const res = await fetch('/api/v1/fees/invoices');
+        const res = await authenticatedFetch('/api/v1/fees/invoices');
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           let list = data.data;
@@ -145,7 +147,7 @@ export default function FeesPage() {
 
     async function loadStudents() {
       try {
-        const res = await fetch('/api/v1/students');
+        const res = await authenticatedFetch('/api/v1/students');
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setStudentsList(data.data);
@@ -217,7 +219,7 @@ export default function FeesPage() {
     };
 
     try {
-      const res = await fetch('/api/v1/fees/create-receipt', {
+      const res = await authenticatedFetch('/api/v1/fees/create-receipt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -289,7 +291,7 @@ export default function FeesPage() {
     const invId = showRazorpayModal.id;
 
     try {
-      const res = await fetch('/api/v1/fees/pay', {
+      const res = await authenticatedFetch('/api/v1/fees/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -348,7 +350,7 @@ export default function FeesPage() {
     const invId = showOfflineModal.id;
 
     try {
-      const res = await fetch('/api/v1/fees/pay', {
+      const res = await authenticatedFetch('/api/v1/fees/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
