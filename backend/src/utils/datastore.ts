@@ -16,6 +16,12 @@ export interface StoreData {
   auditLogs: any[];
   registeredUsers?: any[];
   timetable?: any[];
+  principalProfile?: {
+    name?: string;
+    userId?: string;
+    email?: string;
+    phone?: string;
+  };
 }
 
 const DEFAULT_STORE: StoreData = {
@@ -714,6 +720,19 @@ class DataStore {
     this.data.timetable = entries;
     this.save();
     return { success: true, count: entries.length };
+  }
+
+  getPrincipalProfile() {
+    return this.data.principalProfile || null;
+  }
+
+  setPrincipalProfile(profile: { name?: string; userId?: string; email?: string; phone?: string }) {
+    this.data.principalProfile = {
+      ...(this.data.principalProfile || {}),
+      ...profile,
+    };
+    this.save();
+    return this.data.principalProfile;
   }
 }
 

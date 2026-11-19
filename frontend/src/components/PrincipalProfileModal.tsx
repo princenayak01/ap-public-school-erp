@@ -22,12 +22,17 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
 
   useEffect(() => {
     try {
+      const savedCustomName = localStorage.getItem('apps_principal_name');
+      const savedCustomUserId = localStorage.getItem('apps_principal_userid');
+      if (savedCustomName) setName(savedCustomName);
+      if (savedCustomUserId) setUserId(savedCustomUserId);
+
       const stored = localStorage.getItem('apps_user');
       if (stored) {
         const u = JSON.parse(stored);
-        if (u.name) setName(u.name);
-        if (u.userId) setUserId(u.userId);
-        else if (u.id) setUserId(u.id);
+        if (u.name && !savedCustomName) setName(u.name);
+        if (u.userId && !savedCustomUserId) setUserId(u.userId);
+        else if (u.id && !savedCustomUserId) setUserId(u.id);
         if (u.email) setEmail(u.email);
         if (u.phone) setPhone(u.phone.replace(/[^0-9]/g, ''));
       }
@@ -41,37 +46,61 @@ export const PrincipalProfileModal: React.FC<PrincipalProfileModalProps> = ({
     setSaving(true);
     setNotice('');
 
+    const cleanName = name.trim();
+    const cleanUserId = userId.trim();
+
     try {
-      // Update backend credentials if email, userId or password changed
+      // 1. Immediately persist to localStorage keys that survive any session re-login
+      localStorage.setItem('apps_principal_name', cleanName);
+      if (cleanUserId) localStorage.setItem('apps_principal_userid', cleanUserId);
+
+      // 2. Update backend credentials & persistent profile
       await fetch('/api/v1/auth/update-principal-credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           currentEmailOrPhone: phone,
+          newName: cleanName,
+          name: cleanName,
           newEmail: email.trim(),
           newPassword: password.trim() || undefined,
-          newUserId: userId.trim() || undefined,
+          newUserId: cleanUserId || undefined,
         }),
       });
 
-      // Update local storage representation
+      // 3. Update local user representation
       const updatedUser = {
-        name,
-        userId: userId.trim(),
-        email,
+        name: cleanName,
+        userId: cleanUserId,
+        email: email.trim(),
         phone,
         role: 'PRINCIPAL',
         savedPassword: password.trim() || undefined,
       };
       localStorage.setItem('apps_user', JSON.stringify(updatedUser));
-      setNotice('Principal Profile & User ID updated successfully!');
+
+      // 4. Notify all components across the app to update their display immediately
+      window.dispatchEvent(
+        new CustomEvent('principal-name-updated', {
+          detail: { name: cleanName, userId: cleanUserId },
+        })
+      );
+
+      setNotice('Principal Profile & Name updated successfully!');
       if (onProfileUpdated) onProfileUpdated(updatedUser);
       setTimeout(() => {
         onClose();
-      }, 1500);
+      }, 1200);
     } catch (err) {
+      localStorage.setItem('apps_principal_name', cleanName);
+      if (cleanUserId) localStorage.setItem('apps_principal_userid', cleanUserId);
+      window.dispatchEvent(
+        new CustomEvent('principal-name-updated', {
+          detail: { name: cleanName, userId: cleanUserId },
+        })
+      );
       setNotice('Profile saved locally!');
-      setTimeout(() => onClose(), 1500);
+      setTimeout(() => onClose(), 1200);
     } finally {
       setSaving(false);
     }

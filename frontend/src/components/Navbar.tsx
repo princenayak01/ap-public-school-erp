@@ -25,20 +25,50 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
   }, []);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('apps_user');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setCurrentUser(parsed);
-        if (parsed.role) setRole(parsed.role);
-        return;
-      }
-    } catch (e) {}
+    const loadUser = () => {
+      try {
+        const stored = localStorage.getItem('apps_user');
+        const customPrincipalName = localStorage.getItem('apps_principal_name');
+        const customPrincipalUserId = localStorage.getItem('apps_principal_userid');
 
-    const storedRole = localStorage.getItem('apps_active_role');
-    if (storedRole === 'TEACHER' || storedRole === 'PARENT' || storedRole === 'PRINCIPAL') {
-      setRole(storedRole);
-    }
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.role === 'PRINCIPAL') {
+            if (customPrincipalName) parsed.name = customPrincipalName;
+            if (customPrincipalUserId) parsed.userId = customPrincipalUserId;
+          }
+          setCurrentUser(parsed);
+          if (parsed.role) setRole(parsed.role);
+          return;
+        } else if (customPrincipalName) {
+          setCurrentUser({
+            name: customPrincipalName,
+            userId: customPrincipalUserId || 'APPS-PRINCIPAL-01',
+            role: 'PRINCIPAL',
+          });
+        }
+      } catch (e) {}
+
+      const storedRole = localStorage.getItem('apps_active_role');
+      if (storedRole === 'TEACHER' || storedRole === 'PARENT' || storedRole === 'PRINCIPAL') {
+        setRole(storedRole);
+      }
+    };
+
+    loadUser();
+
+    const handleProfileChange = (e: any) => {
+      if (e.detail?.name) {
+        setCurrentUser((prev: any) => ({
+          ...prev,
+          name: e.detail.name,
+          userId: e.detail.userId || prev?.userId,
+        }));
+      }
+    };
+
+    window.addEventListener('principal-name-updated', handleProfileChange);
+    return () => window.removeEventListener('principal-name-updated', handleProfileChange);
   }, []);
 
   const handleLogout = () => {

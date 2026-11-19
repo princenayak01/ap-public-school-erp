@@ -334,6 +334,13 @@ export class AuthService {
         throw { status: 401, message: 'Invalid credentials. Password incorrect.' };
       }
 
+      // Check if custom Principal profile was saved
+      if (fallbackUser.role === Role.PRINCIPAL) {
+        const savedProfile = datastore.getPrincipalProfile();
+        if (savedProfile?.name) fallbackUser.name = savedProfile.name;
+        if (savedProfile?.userId) fallbackUser.userId = savedProfile.userId;
+      }
+
       const payload = {
         userId: fallbackUser.id,
         email: fallbackUser.email,
@@ -464,25 +471,33 @@ export class AuthService {
     newEmail?: string;
     newPassword?: string;
     newUserId?: string;
+    newName?: string;
     otp?: string;
   }) {
-    if (!data.newEmail && !data.newPassword && !data.newUserId) {
-      throw { status: 400, message: 'Please provide either a new User ID, Email, or Password to update.' };
+    if (!data.newEmail && !data.newPassword && !data.newUserId && !data.newName) {
+      throw { status: 400, message: 'Please provide either a new Name, User ID, Email, or Password to update.' };
     }
 
     const principalKeys = ['principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in', '917348011701', '7348011701', '+91-7348011701', '916306262479'];
     let target = FALLBACK_USERS['principal@appublicschool.edu.in'] || PRINCIPAL_USER_BASE;
 
+    if (data.newName && data.newName.trim()) {
+      target.name = data.newName.trim();
+      datastore.setPrincipalProfile({ name: data.newName.trim() });
+    }
+
     if (data.newUserId) {
       const cleanUserId = data.newUserId.toLowerCase().trim();
       target.userId = data.newUserId.trim();
       FALLBACK_USERS[cleanUserId] = target;
+      datastore.setPrincipalProfile({ userId: data.newUserId.trim() });
     }
 
     if (data.newEmail) {
       const cleanEmail = data.newEmail.toLowerCase().trim();
       target.email = cleanEmail;
       FALLBACK_USERS[cleanEmail] = target;
+      datastore.setPrincipalProfile({ email: cleanEmail });
     }
 
     if (data.newPassword) {
@@ -496,6 +511,7 @@ export class AuthService {
       });
       if (dbPrincipal) {
         const updateData: any = {};
+        if (data.newName) updateData.name = data.newName.trim();
         if (data.newEmail) updateData.email = data.newEmail.toLowerCase().trim();
         if (data.newPassword) updateData.passwordHash = await hashPassword(data.newPassword);
         await prisma.user.update({
@@ -509,8 +525,10 @@ export class AuthService {
 
     return {
       success: true,
-      message: 'Principal credentials updated successfully!',
+      message: 'Principal credentials and name updated successfully!',
       updatedEmail: target.email,
+      updatedName: target.name,
+      updatedUserId: target.userId,
     };
   }
 

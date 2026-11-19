@@ -50,6 +50,9 @@ export default function PrincipalDashboard() {
     try {
       const storedUser = localStorage.getItem('apps_user');
       const token = localStorage.getItem('apps_token');
+      const customPrincipalName = localStorage.getItem('apps_principal_name');
+      const customPrincipalUserId = localStorage.getItem('apps_principal_userid');
+
       if (!storedUser || !token) {
         window.location.replace('/login/principal');
         return;
@@ -59,12 +62,25 @@ export default function PrincipalDashboard() {
         window.location.replace('/login/principal');
         return;
       }
+      if (customPrincipalName) u.name = customPrincipalName;
+      if (customPrincipalUserId) u.userId = customPrincipalUserId;
       setActiveRole('PRINCIPAL');
       setPrincipalUser(u);
     } catch (e) {
       window.location.replace('/login/principal');
       return;
     }
+
+    const handleProfileChange = (e: any) => {
+      if (e.detail?.name) {
+        setPrincipalUser((prev: any) => ({
+          ...prev,
+          name: e.detail.name,
+          userId: e.detail.userId || prev?.userId,
+        }));
+      }
+    };
+    window.addEventListener('principal-name-updated', handleProfileChange);
 
     fetch('/api/v1/dashboard/principal')
       .then((res) => res.json())
@@ -182,7 +198,7 @@ export default function PrincipalDashboard() {
                     <span className="text-xs text-slate-400">CBSE Affiliation: 2130000</span>
                   </div>
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                    Welcome to A. P. PUBLIC SCHOOL, Principal Sharma 👋
+                    Welcome to A. P. PUBLIC SCHOOL, {principalUser?.name || 'Principal'} 👋
                   </h1>
                   <p className="text-xs text-slate-300 mt-1 max-w-xl">
                     Overview of school operations, registration approvals, attendance statistics, fee collections, and student management.

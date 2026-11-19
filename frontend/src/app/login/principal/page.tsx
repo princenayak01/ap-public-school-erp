@@ -35,6 +35,11 @@ export default function PrincipalLoginPage() {
           return;
         }
 
+        const savedCustomName = localStorage.getItem('apps_principal_name');
+        const savedCustomUserId = localStorage.getItem('apps_principal_userid');
+        if (savedCustomName) user.name = savedCustomName;
+        if (savedCustomUserId) user.userId = savedCustomUserId;
+
         localStorage.setItem('apps_token', data.data.accessToken);
         localStorage.setItem('apps_user', JSON.stringify(user));
         localStorage.setItem('apps_active_role', 'PRINCIPAL');
@@ -75,10 +80,13 @@ export default function PrincipalLoginPage() {
       } catch (e) {}
 
       if (validIdentifiers.includes(idClean) && validPasswords.includes(password.trim())) {
+        const savedCustomName = localStorage.getItem('apps_principal_name');
+        const savedCustomUserId = localStorage.getItem('apps_principal_userid');
+
         const fallbackUser = {
           id: 'user-principal-001',
-          userId: idClean === 'admin' || idClean === 'principal' ? idClean.toUpperCase() : 'APPS-PRINCIPAL-01',
-          name: 'Dr. R. K. Sharma (Principal)',
+          userId: savedCustomUserId || (idClean === 'admin' || idClean === 'principal' ? idClean.toUpperCase() : 'APPS-PRINCIPAL-01'),
+          name: savedCustomName || 'Dr. R. K. Sharma (Principal)',
           email: identifier.includes('@') ? identifier : 'principal@appublicschool.edu.in',
           phone: '+91-7348011701',
           role: 'PRINCIPAL',

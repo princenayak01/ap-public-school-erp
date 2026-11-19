@@ -27,31 +27,61 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('apps_user');
-      if (storedUser) {
-        const parsed = JSON.parse(storedUser);
-        setCurrentUser(parsed);
-        if (parsed.role === 'TEACHER' || parsed.role === 'PARENT' || parsed.role === 'PRINCIPAL') {
-          setRole(parsed.role);
-          return;
-        }
-      }
-    } catch (e) {}
+    const loadSidebarUser = () => {
+      try {
+        const storedUser = localStorage.getItem('apps_user');
+        const customPrincipalName = localStorage.getItem('apps_principal_name');
+        const customPrincipalUserId = localStorage.getItem('apps_principal_userid');
 
-    // Fallback to active role or userRole prop
-    const storedRole = localStorage.getItem('apps_active_role');
-    if (storedRole === 'TEACHER' || storedRole === 'PARENT' || storedRole === 'PRINCIPAL') {
-      setRole(storedRole);
-    } else if (userRole === 'TEACHER' || userRole === 'PARENT' || userRole === 'PRINCIPAL') {
-      setRole(userRole);
-    } else if (pathname.includes('/dashboard/teacher')) {
-      setRole('TEACHER');
-    } else if (pathname.includes('/dashboard/parent')) {
-      setRole('PARENT');
-    } else if (pathname.includes('/dashboard/principal')) {
-      setRole('PRINCIPAL');
-    }
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser);
+          if (parsed.role === 'PRINCIPAL') {
+            if (customPrincipalName) parsed.name = customPrincipalName;
+            if (customPrincipalUserId) parsed.userId = customPrincipalUserId;
+          }
+          setCurrentUser(parsed);
+          if (parsed.role === 'TEACHER' || parsed.role === 'PARENT' || parsed.role === 'PRINCIPAL') {
+            setRole(parsed.role);
+            return;
+          }
+        } else if (customPrincipalName) {
+          setCurrentUser({
+            name: customPrincipalName,
+            userId: customPrincipalUserId || 'APPS-PRINCIPAL-01',
+            role: 'PRINCIPAL',
+          });
+        }
+      } catch (e) {}
+
+      // Fallback to active role or userRole prop
+      const storedRole = localStorage.getItem('apps_active_role');
+      if (storedRole === 'TEACHER' || storedRole === 'PARENT' || storedRole === 'PRINCIPAL') {
+        setRole(storedRole);
+      } else if (userRole === 'TEACHER' || userRole === 'PARENT' || userRole === 'PRINCIPAL') {
+        setRole(userRole);
+      } else if (pathname.includes('/dashboard/teacher')) {
+        setRole('TEACHER');
+      } else if (pathname.includes('/dashboard/parent')) {
+        setRole('PARENT');
+      } else if (pathname.includes('/dashboard/principal')) {
+        setRole('PRINCIPAL');
+      }
+    };
+
+    loadSidebarUser();
+
+    const handleProfileChange = (e: any) => {
+      if (e.detail?.name) {
+        setCurrentUser((prev: any) => ({
+          ...prev,
+          name: e.detail.name,
+          userId: e.detail.userId || prev?.userId,
+        }));
+      }
+    };
+
+    window.addEventListener('principal-name-updated', handleProfileChange);
+    return () => window.removeEventListener('principal-name-updated', handleProfileChange);
   }, [pathname, userRole]);
 
   // Listen for mobile drawer toggle events from Navbar
