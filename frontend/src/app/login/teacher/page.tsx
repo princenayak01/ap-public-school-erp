@@ -68,14 +68,15 @@ export default function TeacherLoginPage() {
       <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-amber-500/30 rounded-3xl shadow-2xl p-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-amber-500/30 mb-3 ring-2 ring-amber-400/30">
-            <BookOpen className="w-7 h-7 text-white" />
+          <div className="w-18 h-18 mx-auto rounded-3xl overflow-hidden bg-white/10 p-1 flex items-center justify-center shadow-lg shadow-amber-500/20 mb-3 ring-2 ring-amber-400/40">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="A. P Public School Logo" className="w-full h-full object-contain" />
           </div>
           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
             Faculty & Class Incharge Portal
           </span>
           <h1 className="text-xl font-black text-white tracking-tight mt-2">Class Teacher Login</h1>
-          <p className="text-xs text-slate-400 mt-1">A. P PUBLIC SCHOOL, Jhansi • Academic Access</p>
+          <p className="text-xs text-slate-400 mt-1">A. P. PUBLIC SCHOOL, Baruasagar, Jhansi</p>
         </div>
 
         {/* Approval Pending Warning Card */}

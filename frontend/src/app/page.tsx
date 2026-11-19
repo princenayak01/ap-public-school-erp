@@ -44,17 +44,18 @@ export default function LandingPage() {
       {/* Top Navigation */}
       <nav className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-xl sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-teal-500 flex items-center justify-center font-black text-xl text-white shadow-xl shadow-indigo-600/30 ring-2 ring-indigo-400/20">
-            AP
+          <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white/10 p-0.5 flex items-center justify-center shadow-xl shadow-amber-500/10 ring-2 ring-amber-400/30">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="A. P Public School Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
               <span className="font-extrabold text-base tracking-tight text-white block">A. P PUBLIC SCHOOL</span>
-              <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold text-[10px] border border-indigo-500/30">
+              <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30">
                 CBSE
               </span>
             </div>
-            <span className="text-[11px] text-teal-400 block font-medium">Baruasagar, Jhansi, Uttar Pradesh</span>
+            <span className="text-[11px] text-amber-400 block font-medium">Baruasagar, Jhansi (UP) • Learn • Grow • Succeed</span>
           </div>
         </div>
 
@@ -76,7 +77,14 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section with Graphic Header */}
-      <section className="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center relative z-10">
+      <section className="pt-12 pb-12 px-6 max-w-6xl mx-auto text-center relative z-10">
+        <div className="flex justify-center mb-6">
+          <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden bg-slate-900/90 p-2 border-2 border-amber-500/40 shadow-2xl shadow-amber-500/20 backdrop-blur-xl transform hover:scale-105 transition-transform duration-300">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="A. P. Public School Official Crest" className="w-full h-full object-contain filter drop-shadow" />
+          </div>
+        </div>
+
         <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold mb-6 shadow-sm">
           <Sparkles className="w-4 h-4 text-amber-400" />
           <span>Next-Generation School Management & Parent Portal</span>

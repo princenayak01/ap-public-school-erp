@@ -50,9 +50,15 @@ export default function Navbar({ title = 'School ERP Management' }: { title?: st
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-xs font-sans">
-      <div>
-        <h2 className="text-base font-extrabold text-slate-800 tracking-tight">{title}</h2>
-        <p className="text-[11px] text-slate-500 font-medium">A. P PUBLIC SCHOOL • Baruasagar, Jhansi</p>
+      <div className="flex items-center space-x-3">
+        <div className="w-9 h-9 rounded-lg overflow-hidden bg-slate-100 p-0.5 border border-slate-200 shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="A. P. Public School" className="w-full h-full object-contain" />
+        </div>
+        <div>
+          <h2 className="text-base font-extrabold text-slate-800 tracking-tight">{title}</h2>
+          <p className="text-[11px] text-slate-500 font-medium">A. P. PUBLIC SCHOOL • Baruasagar, Jhansi</p>
+        </div>
       </div>
 
       <div className="flex items-center space-x-3">

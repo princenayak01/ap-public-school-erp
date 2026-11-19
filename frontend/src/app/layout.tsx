@@ -3,8 +3,12 @@ import './globals.css';
 import SecuritySessionGuard from '@/components/SecuritySessionGuard';
 
 export const metadata: Metadata = {
-  title: 'A. P PUBLIC SCHOOL • School ERP & Parent Portal (CBSE)',
-  description: 'Integrated School ERP for A. P PUBLIC SCHOOL, Jhansi (CBSE, Session 2026-27)',
+  title: 'A. P. PUBLIC SCHOOL • School ERP & Parent Portal (CBSE)',
+  description: 'Integrated School ERP for A. P. PUBLIC SCHOOL, Baruasagar, Jhansi (CBSE, Session 2026-27)',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
