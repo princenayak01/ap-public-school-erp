@@ -89,7 +89,7 @@ export default function PrincipalDashboard() {
       setApprovalMsg(resData.message || `Account for ${userName} has been APPROVED!`);
       loadPendingUsers();
     } catch (err) {
-      setApprovalMsg(`Account for ${userName} approved!`);
+      setApprovalMsg(`Unable to approve ${userName}. Please retry.`);
     } finally {
       setTimeout(() => setApprovalMsg(''), 5000);
     }
@@ -104,7 +104,7 @@ export default function PrincipalDashboard() {
       setApprovalMsg(resData.message || `Registration for ${userName} has been REJECTED.`);
       loadPendingUsers();
     } catch (err) {
-      setApprovalMsg(`Registration for ${userName} rejected.`);
+      setApprovalMsg(`Unable to reject ${userName}. Please retry.`);
     } finally {
       setTimeout(() => setApprovalMsg(''), 5000);
     }
