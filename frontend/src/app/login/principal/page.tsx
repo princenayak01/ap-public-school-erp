@@ -130,15 +130,9 @@ export default function PrincipalLoginPage() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Master Admin Password
-              </label>
-              <span className="text-[11px] font-semibold text-slate-400 flex items-center space-x-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Executive Protected</span>
-              </span>
-            </div>
+            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+              Master Password
+            </label>
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
@@ -158,22 +152,10 @@ export default function PrincipalLoginPage() {
             disabled={loading}
             className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-white font-black text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer disabled:opacity-50"
           >
-            <span>{loading ? 'Authenticating Executive...' : 'Login as Principal / Super Admin'}</span>
+            <span>{loading ? 'Authenticating...' : 'Login as Principal'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        {/* Master Scope Notice */}
-        <div className="mt-5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1.5">
-          <p className="font-bold text-indigo-400 flex items-center space-x-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Executive Authority:</span>
-          </p>
-          <p>✓ All Management • Approve/Reject Registered Teachers • Fee Collections • Full Institutional Control</p>
-          <p className="text-slate-500 text-[10px] pt-1 border-t border-slate-800/60">
-            🔒 Security Protocol: Principal profile & credentials can only be edited securely from inside the authenticated Principal Dashboard.
-          </p>
-        </div>
 
         <div className="mt-5 pt-4 border-t border-slate-800 text-center space-y-2">
           <p className="text-[11px] text-slate-500">
