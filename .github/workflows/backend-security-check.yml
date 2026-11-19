@@ -1,0 +1,50 @@
+name: Backend security branch checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-security-check.yml"
+  push:
+    branches: [security/multi-tenant-isolation-audit]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-security-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  backend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: "postgresql://ci:ci@127.0.0.1:5432/ci?schema=public"
+      JWT_ACCESS_SECRET: "ci_only_access_secret_0123456789_abcdef"
+      JWT_REFRESH_SECRET: "ci_only_refresh_secret_9876543210_abcdef"
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: TypeScript build
+        run: npm run build
