@@ -1,4 +1,4 @@
-name: Upgrade vulnerable Zod dependency
+name: Upgrade vulnerable Zod dependency (compatibility retry)
 
 on:
   push:
