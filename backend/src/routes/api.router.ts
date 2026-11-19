@@ -58,7 +58,7 @@ router.get(
 router.post(
   '/students/admission',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   recordAuditLog('STUDENT_ADMISSION', 'Student'),
   StudentController.admit
 );
@@ -66,7 +66,7 @@ router.post(
 router.post(
   '/students/bulk-upload',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   recordAuditLog('STUDENT_BULK_UPLOAD', 'Student'),
   StudentController.bulkUpload
 );
@@ -74,14 +74,14 @@ router.post(
 router.get(
   '/students',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER, Role.ACCOUNTANT),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT),
   StudentController.list
 );
 
 router.get(
   '/students/:id',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER, Role.ACCOUNTANT),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.ACCOUNTANT),
   StudentController.getById
 );
 
@@ -171,11 +171,11 @@ router.get(
 router.post(
   '/attendance/daily',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   recordAuditLog('MARK_DAILY_ATTENDANCE', 'Attendance'),
   AttendanceController.markDaily
 );
-router.post('/attendance/mark', authenticateJWT, authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), AttendanceController.markDaily);
+router.post('/attendance/mark', authenticateJWT, authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), AttendanceController.markDaily);
 
 router.post(
   '/attendance/bulk-range',
@@ -189,14 +189,14 @@ router.post('/attendance/date-range', authenticateJWT, authorizeRoles(Role.PRINC
 router.get(
   '/attendance/daily-sheet',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   AttendanceController.getDailySheet
 );
 
 router.get(
   '/attendance/monthly-report',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   AttendanceController.getMonthlyReport
 );
 
@@ -227,12 +227,12 @@ router.post(
 router.post(
   '/exams/marks',
   authenticateJWT,
-  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER),
+  authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN),
   recordAuditLog('ENTER_EXAM_MARKS', 'Mark'),
   ExamController.enterMarks
 );
 
-router.get('/exams/marks', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN, Role.TEACHER), ExamController.getMarks);
+router.get('/exams/marks', authorizeRoles(Role.PRINCIPAL, Role.SCHOOL_ADMIN), ExamController.getMarks);
 
 router.post(
   '/exams/generate-reports',
