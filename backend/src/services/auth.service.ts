@@ -392,6 +392,61 @@ export class AuthService {
     return datastore.getPendingUsers();
   }
 
+  static async updatePrincipalCredentials(data: {
+    currentEmailOrPhone: string;
+    newEmail?: string;
+    newPassword?: string;
+    otp: string;
+  }) {
+    if (!data.otp) {
+      throw { status: 400, message: 'Real-time 6-digit OTP verification is required to update credentials.' };
+    }
+
+    // Verify OTP sent to current registered email / phone
+    await this.verifyOtp(data.currentEmailOrPhone, data.otp);
+
+    if (!data.newEmail && !data.newPassword) {
+      throw { status: 400, message: 'Please provide either a new Email or a new Password to update.' };
+    }
+
+    const principalKeys = ['principal@appublicschool.edu.in', 'principal@appsjhansi.edu.in', '916306262479', '+91-9876543210'];
+    let target = FALLBACK_USERS['principal@appublicschool.edu.in'];
+
+    if (data.newEmail) {
+      const cleanEmail = data.newEmail.toLowerCase().trim();
+      target.email = cleanEmail;
+      FALLBACK_USERS[cleanEmail] = target;
+    }
+
+    if (data.newPassword) {
+      target.passwords = [data.newPassword, ...(target.passwords || [])];
+    }
+
+    // Also attempt updating in persistent database if online
+    try {
+      const dbPrincipal = await prisma.user.findFirst({
+        where: { role: Role.PRINCIPAL },
+      });
+      if (dbPrincipal) {
+        const updateData: any = {};
+        if (data.newEmail) updateData.email = data.newEmail.toLowerCase().trim();
+        if (data.newPassword) updateData.passwordHash = await hashPassword(data.newPassword);
+        await prisma.user.update({
+          where: { id: dbPrincipal.id },
+          data: updateData,
+        });
+      }
+    } catch (dbErr) {
+      console.warn('[AUTH_DB_UPDATE] Live database not reachable, in-memory principal credentials successfully updated.');
+    }
+
+    return {
+      success: true,
+      message: 'Principal credentials updated successfully via 2-Step OTP Verification!',
+      updatedEmail: target.email,
+    };
+  }
+
   static async refreshToken(oldRefreshToken: string) {
     try {
       const decoded = verifyRefreshToken(oldRefreshToken);

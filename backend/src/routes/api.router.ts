@@ -23,6 +23,7 @@ router.post('/auth/register', AuthController.register);
 router.post('/auth/send-otp', AuthController.sendOtp);
 router.post('/auth/verify-otp', AuthController.verifyOtp);
 router.post('/auth/register-teacher', AuthController.registerTeacher);
+router.post('/auth/update-principal-credentials', AuthController.updatePrincipalCredentials);
 router.post('/auth/refresh', AuthController.refresh);
 router.get('/auth/me', authenticateJWT, AuthController.me);
 

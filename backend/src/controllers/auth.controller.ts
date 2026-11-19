@@ -72,6 +72,24 @@ export class AuthController {
     }
   }
 
+  static async updatePrincipalCredentials(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { currentEmailOrPhone, newEmail, newPassword, otp } = req.body;
+      const result = await AuthService.updatePrincipalCredentials({
+        currentEmailOrPhone,
+        newEmail,
+        newPassword,
+        otp,
+      });
+      return res.status(200).json(result);
+    } catch (err: any) {
+      return res.status(err.status || 400).json({
+        success: false,
+        message: err.message || 'Failed to update Principal credentials',
+      });
+    }
+  }
+
   static async approveUser(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
