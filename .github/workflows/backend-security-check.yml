@@ -1,4 +1,4 @@
-name: Backend security branch checks
+name: Backend and frontend security checks (patched dependency set)
 
 on:
   pull_request:
