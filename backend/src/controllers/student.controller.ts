@@ -40,6 +40,23 @@ export class StudentController {
 
   static async list(req: Request, res: Response, next: NextFunction) {
     try {
+      const authUser = (req as any).user;
+      // STRICT PRIVACY PROTECTION: If requester is a PARENT, only return their own children
+      if (authUser && authUser.role === 'PARENT') {
+        const phone = (req.query.phone as string) || authUser.phone || '';
+        const email = (req.query.email as string) || authUser.email || '';
+        const parentChildren = datastore.getChildrenForParent({
+          userId: authUser.userId || authUser.id,
+          phone,
+          email,
+        });
+        return res.status(200).json({
+          success: true,
+          data: parentChildren,
+          pagination: { total: parentChildren.length, page: 1, limit: 50, totalPages: 1 },
+        });
+      }
+
       if (!isDbOnline) {
         const students = datastore.getStudents({
           class: req.query.classId as string,

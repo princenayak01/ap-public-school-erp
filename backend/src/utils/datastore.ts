@@ -115,6 +115,36 @@ class DataStore {
     return list;
   }
 
+  // Strict Data Isolation: Return only the authenticated parent's child/children
+  getChildrenForParent(parentIdentifier: { userId?: string; phone?: string; email?: string }): any[] {
+    const normPhone = (p?: string) => (p || '').replace(/[^0-9]/g, '').slice(-10);
+    const targetPhone = normPhone(parentIdentifier.phone);
+    const targetEmail = (parentIdentifier.email || '').toLowerCase().trim();
+    const targetUserId = parentIdentifier.userId;
+
+    return this.data.students.filter((st) => {
+      // 1. Direct parent/user ID match
+      if (targetUserId && (st.parentId === targetUserId || st.userId === targetUserId)) {
+        return true;
+      }
+      // 2. Exact last 10 digits of mobile phone match
+      if (targetPhone && st.parentPhone) {
+        const stPhone = normPhone(st.parentPhone);
+        if (stPhone && stPhone === targetPhone) {
+          return true;
+        }
+      }
+      // 3. Exact email match (case-insensitive)
+      if (targetEmail && st.parentEmail) {
+        const stEmail = st.parentEmail.toLowerCase().trim();
+        if (stEmail && stEmail === targetEmail) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
   admitStudent(studentData: any) {
     const count = this.data.students.length + 1;
     const admissionNo = `APPS/2026/${String(count).padStart(3, '0')}`;
@@ -420,6 +450,42 @@ class DataStore {
         status: 'ACTIVE',
       };
       this.data.students.unshift(studentObj);
+    }
+
+    // If role is PARENT, link or register their child/ward so only this parent sees them
+    if (userData.role === 'PARENT') {
+      const childName = (userData.childName || '').trim();
+      if (childName) {
+        const stCount = this.data.students.length + 1;
+        const admissionNo = `APPS/2026/${String(stCount).padStart(3, '0')}`;
+        const nameParts = childName.split(' ');
+        const firstName = nameParts[0] || 'Child';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        const childObj = {
+          id: `std-${String(stCount).padStart(3, '0')}`,
+          admissionNo,
+          rollNumber: String(userData.rollNumber || stCount),
+          firstName,
+          lastName,
+          gender: userData.gender || 'MALE',
+          dateOfBirth: userData.dateOfBirth || '2016-04-12',
+          bloodGroup: userData.bloodGroup || 'B+',
+          classId: 'cls-4',
+          className: userData.className || 'Class 4',
+          sectionId: 'sec-4a',
+          sectionName: userData.sectionName || 'A',
+          parentId: userId,
+          parentName: userData.name || 'Parent Guardian',
+          parentPhone: userData.phone || '+91-9876543210',
+          parentEmail: userData.email,
+          address: userData.address || 'Baruasagar, Jhansi, U.P.',
+          admissionDate: new Date().toISOString().split('T')[0],
+          status: 'ACTIVE',
+        };
+        this.data.students.unshift(childObj);
+        (newUser as any).childAdmissionNo = admissionNo;
+        (newUser as any).childName = childName;
+      }
     }
 
     this.save();

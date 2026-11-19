@@ -98,8 +98,24 @@ export default function FeesPage() {
         const res = await fetch('/api/v1/fees/invoices');
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
+          let list = data.data;
+          const uStr = localStorage.getItem('apps_user');
+          const u = uStr ? JSON.parse(uStr) : null;
+          if (u && u.role === 'PARENT') {
+            const norm = (val?: string) => (val || '').replace(/[^0-9]/g, '').slice(-10);
+            const pPhone = norm(u.phone);
+            const pEmail = (u.email || '').toLowerCase().trim();
+            list = list.filter((inv: any) => {
+              if (u.childName && inv.studentName && inv.studentName.toLowerCase().includes(u.childName.toLowerCase())) return true;
+              if (u.childAdmissionNo && inv.admissionNo === u.childAdmissionNo) return true;
+              if (pPhone && inv.parentPhone && norm(inv.parentPhone) === pPhone) return true;
+              if (pEmail && inv.parentEmail && inv.parentEmail.toLowerCase().trim() === pEmail) return true;
+              return false;
+            });
+          }
+
           setInvoices(
-            data.data.map((inv: any) => ({
+            list.map((inv: any) => ({
               id: inv.id,
               invoiceNo: inv.invoiceNo,
               receiptNo: inv.receiptNumber || `REC-2026-${String(inv.id).slice(-3)}`,

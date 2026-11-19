@@ -1,667 +1,692 @@
-{
-  "classes": [
-    {
-      "id": "cls-nur",
-      "name": "Nursery",
-      "numericOrder": 0
-    },
-    {
-      "id": "cls-lkg",
-      "name": "LKG",
-      "numericOrder": 1
-    },
-    {
-      "id": "cls-ukg",
-      "name": "UKG",
-      "numericOrder": 2
-    },
-    {
-      "id": "cls-1",
-      "name": "Class 1",
-      "numericOrder": 3
-    },
-    {
-      "id": "cls-2",
-      "name": "Class 2",
-      "numericOrder": 4
-    },
-    {
-      "id": "cls-3",
-      "name": "Class 3",
-      "numericOrder": 5
-    },
-    {
-      "id": "cls-4",
-      "name": "Class 4",
-      "numericOrder": 6
-    },
-    {
-      "id": "cls-5",
-      "name": "Class 5",
-      "numericOrder": 7
-    },
-    {
-      "id": "cls-6",
-      "name": "Class 6",
-      "numericOrder": 8
-    },
-    {
-      "id": "cls-7",
-      "name": "Class 7",
-      "numericOrder": 9
-    },
-    {
-      "id": "cls-8",
-      "name": "Class 8",
-      "numericOrder": 10
-    }
-  ],
-  "sections": [
-    {
-      "id": "sec-4a",
-      "classId": "cls-4",
-      "name": "A",
-      "roomNumber": "Room 104"
-    },
-    {
-      "id": "sec-4b",
-      "classId": "cls-4",
-      "name": "B",
-      "roomNumber": "Room 105"
-    },
-    {
-      "id": "sec-1a",
-      "classId": "cls-1",
-      "name": "A",
-      "roomNumber": "Room 101"
-    },
-    {
-      "id": "sec-1b",
-      "classId": "cls-1",
-      "name": "B",
-      "roomNumber": "Room 102"
-    }
-  ],
-  "students": [
-    {
-      "id": "std-001",
-      "admissionNo": "APPS/2026/001",
-      "rollNumber": "1",
-      "firstName": "amit",
-      "lastName": "nayak",
-      "gender": "MALE",
-      "dateOfBirth": "2016-05-15",
-      "bloodGroup": "B+",
-      "classId": "cls-4",
-      "className": "Class 4",
-      "sectionId": "sec-4a",
-      "sectionName": "A",
-      "parentName": "prince",
-      "parentPhone": "7309720610",
-      "parentEmail": "",
-      "address": "Baruasagar, Jhansi, U.P.",
-      "admissionDate": "2026-11-18",
-      "status": "ACTIVE"
-    }
-  ],
-  "attendance": [
-    {
-      "studentId": "std-001",
-      "date": "2026-11-18",
-      "status": "PRESENT",
-      "remark": ""
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-02",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-03",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-04",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-05",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-06",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-07",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-09",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-10",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-11",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-12",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-13",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-14",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-16",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-17",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-19",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-20",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-21",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-23",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-24",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-25",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-26",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-27",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-28",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    },
-    {
-      "studentId": "std-001",
-      "date": "2026-11-30",
-      "status": "PRESENT",
-      "remark": "Bulk Marked"
-    }
-  ],
-  "feeInvoices": [
-    {
-      "id": "inv-1795018604780",
-      "invoiceNo": "INV-2026-002",
-      "receiptNumber": "REC-2026-002",
-      "studentId": "std-custom-1795018604780",
-      "studentName": "Rohan Verma",
-      "className": "Class 5",
-      "rollNo": "05",
-      "admissionNo": "APPS/2026/005",
-      "month": "April 2026",
-      "feeHead": "Tuition Fee",
-      "totalAmount": 2000,
-      "paidAmount": 3600,
-      "balanceAmount": 0,
-      "status": "PAID",
-      "paymentMode": "UPI",
-      "createdAt": "2026-11-18",
-      "remarks": "Partial Payment"
-    },
-    {
-      "id": "inv-1795018592840",
-      "invoiceNo": "INV-2026-001",
-      "receiptNumber": "REC-2026-001",
-      "studentId": "std-custom-1795018592841",
-      "studentName": "Aarav Sharma",
-      "className": "Class 4",
-      "rollNo": "01",
-      "admissionNo": "APPS/2026/001",
-      "month": "April 2026",
-      "feeHead": "Tuition Fee",
-      "totalAmount": 2500,
-      "paidAmount": 2500,
-      "balanceAmount": 0,
-      "status": "PAID",
-      "paymentMode": "CASH",
-      "createdAt": "2026-11-18",
-      "remarks": "Full Tuition Fee Paid"
-    }
-  ],
-  "feePayments": [
-    {
-      "id": "pay-1795018964577",
-      "receiptNumber": "REC/2026/005",
-      "invoiceId": "inv-1795018604780",
-      "studentName": "Rohan Verma",
-      "amountPaid": 800,
-      "paymentMethod": "ONLINE_RAZORPAY",
-      "transactionId": "pay_apps_1795018962010",
-      "paymentDate": "2026-11-18"
-    },
-    {
-      "id": "pay-1795018964564",
-      "receiptNumber": "REC/2026/004",
-      "invoiceId": "inv-1795018604780",
-      "studentName": "Rohan Verma",
-      "amountPaid": 800,
-      "paymentMethod": "ONLINE_RAZORPAY",
-      "transactionId": "pay_apps_1795018961818",
-      "paymentDate": "2026-11-18"
-    },
-    {
-      "id": "pay-1795018964550",
-      "receiptNumber": "REC/2026/003",
-      "invoiceId": "inv-1795018604780",
-      "studentName": "Rohan Verma",
-      "amountPaid": 800,
-      "paymentMethod": "ONLINE_RAZORPAY",
-      "transactionId": "pay_apps_1795018959916",
-      "paymentDate": "2026-11-18"
-    },
-    {
-      "id": "pay-1795018604780",
-      "receiptNumber": "REC-2026-002",
-      "invoiceId": "inv-1795018604780",
-      "studentName": "Rohan Verma",
-      "className": "Class 5",
-      "amountPaid": 1200,
-      "paymentMethod": "UPI",
-      "transactionId": "TXN_1795018604780",
-      "paymentDate": "2026-11-18",
-      "balanceAmount": 800,
-      "status": "PARTIAL"
-    },
-    {
-      "id": "pay-1795018592841",
-      "receiptNumber": "REC-2026-001",
-      "invoiceId": "inv-1795018592840",
-      "studentName": "Aarav Sharma",
-      "className": "Class 4",
-      "amountPaid": 2500,
-      "paymentMethod": "CASH",
-      "transactionId": "TXN_1795018592841",
-      "paymentDate": "2026-11-18",
-      "balanceAmount": 0,
-      "status": "PAID"
-    }
-  ],
-  "feeStructures": [
-    {
-      "id": "fs-1",
-      "className": "Nursery to UKG",
-      "tuitionFee": 1500,
-      "admissionFee": 2500,
-      "annualCharges": 1200
-    },
-    {
-      "id": "fs-2",
-      "className": "Class 1 to 5",
-      "tuitionFee": 1800,
-      "admissionFee": 3000,
-      "annualCharges": 1500
-    },
-    {
-      "id": "fs-3",
-      "className": "Class 6 to 8",
-      "tuitionFee": 2200,
-      "admissionFee": 3500,
-      "annualCharges": 1800
-    }
-  ],
-  "exams": [
-    {
-      "id": "exam-01",
-      "name": "Term 1 Mid-Term Examination",
-      "academicYear": "2026-27",
-      "startDate": "2026-09-15",
-      "endDate": "2026-09-25"
-    },
-    {
-      "id": "exam-02",
-      "name": "Final Annual CBSE Examination",
-      "academicYear": "2026-27",
-      "startDate": "2027-02-20",
-      "endDate": "2027-03-05"
-    }
-  ],
-  "marks": [],
-  "auditLogs": [],
-  "registeredUsers": [
-    {
-      "id": "usr-tch-002",
-      "teacherId": "TCH-2026-01",
-      "name": "amit",
-      "email": "amit@gmail.com",
-      "phone": "7309720610",
-      "role": "TEACHER",
-      "password": "0987654321",
-      "className": "Class 4",
-      "sectionName": "A",
-      "subject": "Mathematics & Science",
-      "rollNumber": "1",
-      "otpVerified": true,
-      "registeredAt": "2026-11-18T15:22:08.555Z",
-      "status": "APPROVED",
-      "approvedAt": "2026-11-18T15:23:28.990Z"
-    },
-    {
-      "id": "usr-tch-001",
-      "teacherId": "TCH-2026-99",
-      "name": "Pooja Tiwari",
-      "email": "pooja.tiwari@apps.edu.in",
-      "phone": "9876500011",
-      "role": "TEACHER",
-      "password": "TeacherPass@123",
-      "className": "Class 4",
-      "sectionName": "A",
-      "subject": "Mathematics",
-      "rollNumber": "1",
-      "otpVerified": true,
-      "registeredAt": "2026-11-18T15:19:05.627Z",
-      "status": "APPROVED",
-      "approvedAt": "2026-11-18T15:19:10.242Z"
-    }
-  ],
-  "timetable": [
-    {
-      "id": "tt-1",
-      "day": "Monday",
-      "period": 1,
-      "time": "08:30 AM - 09:15 AM",
-      "subject": "Mathematics",
-      "teacher": "Sunita Sharma",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-2",
-      "day": "Monday",
-      "period": 2,
-      "time": "09:15 AM - 10:00 AM",
-      "subject": "Hindi Literature",
-      "teacher": "Kamlesh Tiwari",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-3",
-      "day": "Monday",
-      "period": 3,
-      "time": "10:00 AM - 10:45 AM",
-      "subject": "English Grammar",
-      "teacher": "Renu Gupta",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-4",
-      "day": "Monday",
-      "period": 4,
-      "time": "11:15 AM - 12:00 PM",
-      "subject": "General Science",
-      "teacher": "Anil Verma",
-      "room": "Science Lab",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-5",
-      "day": "Monday",
-      "period": 5,
-      "time": "12:00 PM - 12:45 PM",
-      "subject": "Social Studies",
-      "teacher": "Priya Srivastava",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-6",
-      "day": "Monday",
-      "period": 6,
-      "time": "01:15 PM - 02:00 PM",
-      "subject": "Computer Applications",
-      "teacher": "Vikas Dubey",
-      "room": "IT Lab",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-7",
-      "day": "Monday",
-      "period": 7,
-      "time": "02:00 PM - 02:40 PM",
-      "subject": "Physical Education / Sports",
-      "teacher": "Rajesh Yadav",
-      "room": "Playground",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-8",
-      "day": "Tuesday",
-      "period": 1,
-      "time": "08:30 AM - 09:15 AM",
-      "subject": "English Grammar",
-      "teacher": "Renu Gupta",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-9",
-      "day": "Tuesday",
-      "period": 2,
-      "time": "09:15 AM - 10:00 AM",
-      "subject": "Mathematics",
-      "teacher": "Sunita Sharma",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-10",
-      "day": "Tuesday",
-      "period": 3,
-      "time": "10:00 AM - 10:45 AM",
-      "subject": "General Science",
-      "teacher": "Anil Verma",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-11",
-      "day": "Tuesday",
-      "period": 4,
-      "time": "11:15 AM - 12:00 PM",
-      "subject": "Hindi Literature",
-      "teacher": "Kamlesh Tiwari",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-12",
-      "day": "Tuesday",
-      "period": 5,
-      "time": "12:00 PM - 12:45 PM",
-      "subject": "Social Studies",
-      "teacher": "Priya Srivastava",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-13",
-      "day": "Tuesday",
-      "period": 6,
-      "time": "01:15 PM - 02:00 PM",
-      "subject": "Art & Craft",
-      "teacher": "Sunita Sharma",
-      "room": "Art Room",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-14",
-      "day": "Tuesday",
-      "period": 7,
-      "time": "02:00 PM - 02:40 PM",
-      "subject": "Library & Reading",
-      "teacher": "Library Incharge",
-      "room": "Library",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-15",
-      "day": "Wednesday",
-      "period": 1,
-      "time": "08:30 AM - 09:15 AM",
-      "subject": "Mathematics",
-      "teacher": "Sunita Sharma",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-16",
-      "day": "Wednesday",
-      "period": 2,
-      "time": "09:15 AM - 10:00 AM",
-      "subject": "General Science",
-      "teacher": "Anil Verma",
-      "room": "Science Lab",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-17",
-      "day": "Wednesday",
-      "period": 3,
-      "time": "10:00 AM - 10:45 AM",
-      "subject": "English Grammar",
-      "teacher": "Renu Gupta",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-18",
-      "day": "Wednesday",
-      "period": 4,
-      "time": "11:15 AM - 12:00 PM",
-      "subject": "Hindi Literature",
-      "teacher": "Kamlesh Tiwari",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-19",
-      "day": "Wednesday",
-      "period": 5,
-      "time": "12:00 PM - 12:45 PM",
-      "subject": "Computer Applications",
-      "teacher": "Vikas Dubey",
-      "room": "IT Lab",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-20",
-      "day": "Wednesday",
-      "period": 6,
-      "time": "01:15 PM - 02:00 PM",
-      "subject": "Social Studies",
-      "teacher": "Priya Srivastava",
-      "room": "Room 104",
-      "className": "Class 4",
-      "sectionName": "A"
-    },
-    {
-      "id": "tt-21",
-      "day": "Wednesday",
-      "period": 7,
-      "time": "02:00 PM - 02:40 PM",
-      "subject": "Music & Dance",
-      "teacher": "Guest Instructor",
-      "room": "Activity Hall",
-      "className": "Class 4",
-      "sectionName": "A"
-    }
-  ]
+﻿{
+    "classes":  [
+                    {
+                        "id":  "cls-nur",
+                        "name":  "Nursery",
+                        "numericOrder":  0
+                    },
+                    {
+                        "id":  "cls-lkg",
+                        "name":  "LKG",
+                        "numericOrder":  1
+                    },
+                    {
+                        "id":  "cls-ukg",
+                        "name":  "UKG",
+                        "numericOrder":  2
+                    },
+                    {
+                        "id":  "cls-1",
+                        "name":  "Class 1",
+                        "numericOrder":  3
+                    },
+                    {
+                        "id":  "cls-2",
+                        "name":  "Class 2",
+                        "numericOrder":  4
+                    },
+                    {
+                        "id":  "cls-3",
+                        "name":  "Class 3",
+                        "numericOrder":  5
+                    },
+                    {
+                        "id":  "cls-4",
+                        "name":  "Class 4",
+                        "numericOrder":  6
+                    },
+                    {
+                        "id":  "cls-5",
+                        "name":  "Class 5",
+                        "numericOrder":  7
+                    },
+                    {
+                        "id":  "cls-6",
+                        "name":  "Class 6",
+                        "numericOrder":  8
+                    },
+                    {
+                        "id":  "cls-7",
+                        "name":  "Class 7",
+                        "numericOrder":  9
+                    },
+                    {
+                        "id":  "cls-8",
+                        "name":  "Class 8",
+                        "numericOrder":  10
+                    }
+                ],
+    "sections":  [
+                     {
+                         "id":  "sec-4a",
+                         "classId":  "cls-4",
+                         "name":  "A",
+                         "roomNumber":  "Room 104"
+                     },
+                     {
+                         "id":  "sec-4b",
+                         "classId":  "cls-4",
+                         "name":  "B",
+                         "roomNumber":  "Room 105"
+                     },
+                     {
+                         "id":  "sec-1a",
+                         "classId":  "cls-1",
+                         "name":  "A",
+                         "roomNumber":  "Room 101"
+                     },
+                     {
+                         "id":  "sec-1b",
+                         "classId":  "cls-1",
+                         "name":  "B",
+                         "roomNumber":  "Room 102"
+                     }
+                 ],
+    "students":  [
+                     {
+                         "id":  "std-001",
+                         "admissionNo":  "APPS/2026/001",
+                         "rollNumber":  "1",
+                         "firstName":  "amit",
+                         "lastName":  "nayak",
+                         "gender":  "MALE",
+                         "dateOfBirth":  "2016-05-15",
+                         "bloodGroup":  "B+",
+                         "classId":  "cls-4",
+                         "className":  "Class 4",
+                         "sectionId":  "sec-4a",
+                         "sectionName":  "A",
+                         "parentName":  "prince",
+                         "parentPhone":  "7309720610",
+                         "parentEmail":  "",
+                         "address":  "Baruasagar, Jhansi, U.P.",
+                         "admissionDate":  "2026-11-18",
+                         "status":  "ACTIVE"
+                     },
+                     {
+                         "id":  "std-002",
+                         "admissionNo":  "APPS/2026/002",
+                         "rollNumber":  "02",
+                         "firstName":  "Aarav",
+                         "lastName":  "Sharma",
+                         "gender":  "MALE",
+                         "dateOfBirth":  "2016-04-12",
+                         "bloodGroup":  "B+",
+                         "classId":  "cls-4",
+                         "className":  "Class 4",
+                         "sectionId":  "sec-4a",
+                         "sectionName":  "A",
+                         "parentId":  "user-parent-001",
+                         "parentName":  "Manoj Sharma",
+                         "parentPhone":  "+91-9876543213",
+                         "parentEmail":  "parent.sharma@gmail.com",
+                         "address":  "124, Naya Bus Stand Road, Baruasagar, Jhansi",
+                         "admissionDate":  "2026-04-01",
+                         "status":  "ACTIVE"
+                     }
+                 ],
+    "attendance":  [
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-18",
+                           "status":  "PRESENT",
+                           "remark":  ""
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-02",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-03",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-04",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-05",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-06",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-07",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-09",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-10",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-11",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-12",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-13",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-14",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-16",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-17",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-19",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-20",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-21",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-23",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-24",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-25",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-26",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-27",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-28",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       },
+                       {
+                           "studentId":  "std-001",
+                           "date":  "2026-11-30",
+                           "status":  "PRESENT",
+                           "remark":  "Bulk Marked"
+                       }
+                   ],
+    "feeInvoices":  [
+                        {
+                            "id":  "inv-1795018604780",
+                            "invoiceNo":  "INV-2026-002",
+                            "receiptNumber":  "REC-2026-002",
+                            "studentId":  "std-custom-1795018604780",
+                            "studentName":  "Rohan Verma",
+                            "className":  "Class 5",
+                            "rollNo":  "05",
+                            "admissionNo":  "APPS/2026/005",
+                            "month":  "April 2026",
+                            "feeHead":  "Tuition Fee",
+                            "totalAmount":  2000,
+                            "paidAmount":  3600,
+                            "balanceAmount":  0,
+                            "status":  "PAID",
+                            "paymentMode":  "UPI",
+                            "createdAt":  "2026-11-18",
+                            "remarks":  "Partial Payment"
+                        },
+                        {
+                            "id":  "inv-1795018592840",
+                            "invoiceNo":  "INV-2026-001",
+                            "receiptNumber":  "REC-2026-001",
+                            "studentId":  "std-custom-1795018592841",
+                            "studentName":  "Aarav Sharma",
+                            "className":  "Class 4",
+                            "rollNo":  "01",
+                            "admissionNo":  "APPS/2026/001",
+                            "month":  "April 2026",
+                            "feeHead":  "Tuition Fee",
+                            "totalAmount":  2500,
+                            "paidAmount":  2500,
+                            "balanceAmount":  0,
+                            "status":  "PAID",
+                            "paymentMode":  "CASH",
+                            "createdAt":  "2026-11-18",
+                            "remarks":  "Full Tuition Fee Paid"
+                        }
+                    ],
+    "feePayments":  [
+                        {
+                            "id":  "pay-1795018964577",
+                            "receiptNumber":  "REC/2026/005",
+                            "invoiceId":  "inv-1795018604780",
+                            "studentName":  "Rohan Verma",
+                            "amountPaid":  800,
+                            "paymentMethod":  "ONLINE_RAZORPAY",
+                            "transactionId":  "pay_apps_1795018962010",
+                            "paymentDate":  "2026-11-18"
+                        },
+                        {
+                            "id":  "pay-1795018964564",
+                            "receiptNumber":  "REC/2026/004",
+                            "invoiceId":  "inv-1795018604780",
+                            "studentName":  "Rohan Verma",
+                            "amountPaid":  800,
+                            "paymentMethod":  "ONLINE_RAZORPAY",
+                            "transactionId":  "pay_apps_1795018961818",
+                            "paymentDate":  "2026-11-18"
+                        },
+                        {
+                            "id":  "pay-1795018964550",
+                            "receiptNumber":  "REC/2026/003",
+                            "invoiceId":  "inv-1795018604780",
+                            "studentName":  "Rohan Verma",
+                            "amountPaid":  800,
+                            "paymentMethod":  "ONLINE_RAZORPAY",
+                            "transactionId":  "pay_apps_1795018959916",
+                            "paymentDate":  "2026-11-18"
+                        },
+                        {
+                            "id":  "pay-1795018604780",
+                            "receiptNumber":  "REC-2026-002",
+                            "invoiceId":  "inv-1795018604780",
+                            "studentName":  "Rohan Verma",
+                            "className":  "Class 5",
+                            "amountPaid":  1200,
+                            "paymentMethod":  "UPI",
+                            "transactionId":  "TXN_1795018604780",
+                            "paymentDate":  "2026-11-18",
+                            "balanceAmount":  800,
+                            "status":  "PARTIAL"
+                        },
+                        {
+                            "id":  "pay-1795018592841",
+                            "receiptNumber":  "REC-2026-001",
+                            "invoiceId":  "inv-1795018592840",
+                            "studentName":  "Aarav Sharma",
+                            "className":  "Class 4",
+                            "amountPaid":  2500,
+                            "paymentMethod":  "CASH",
+                            "transactionId":  "TXN_1795018592841",
+                            "paymentDate":  "2026-11-18",
+                            "balanceAmount":  0,
+                            "status":  "PAID"
+                        }
+                    ],
+    "feeStructures":  [
+                          {
+                              "id":  "fs-1",
+                              "className":  "Nursery to UKG",
+                              "tuitionFee":  1500,
+                              "admissionFee":  2500,
+                              "annualCharges":  1200
+                          },
+                          {
+                              "id":  "fs-2",
+                              "className":  "Class 1 to 5",
+                              "tuitionFee":  1800,
+                              "admissionFee":  3000,
+                              "annualCharges":  1500
+                          },
+                          {
+                              "id":  "fs-3",
+                              "className":  "Class 6 to 8",
+                              "tuitionFee":  2200,
+                              "admissionFee":  3500,
+                              "annualCharges":  1800
+                          }
+                      ],
+    "exams":  [
+                  {
+                      "id":  "exam-01",
+                      "name":  "Term 1 Mid-Term Examination",
+                      "academicYear":  "2026-27",
+                      "startDate":  "2026-09-15",
+                      "endDate":  "2026-09-25"
+                  },
+                  {
+                      "id":  "exam-02",
+                      "name":  "Final Annual CBSE Examination",
+                      "academicYear":  "2026-27",
+                      "startDate":  "2027-02-20",
+                      "endDate":  "2027-03-05"
+                  }
+              ],
+    "marks":  [
+
+              ],
+    "auditLogs":  [
+
+                  ],
+    "registeredUsers":  [
+                            {
+                                "id":  "usr-tch-002",
+                                "teacherId":  "TCH-2026-01",
+                                "name":  "amit",
+                                "email":  "amit@gmail.com",
+                                "phone":  "7309720610",
+                                "role":  "TEACHER",
+                                "password":  "0987654321",
+                                "className":  "Class 4",
+                                "sectionName":  "A",
+                                "subject":  "Mathematics \u0026 Science",
+                                "rollNumber":  "1",
+                                "otpVerified":  true,
+                                "registeredAt":  "2026-11-18T15:22:08.555Z",
+                                "status":  "APPROVED",
+                                "approvedAt":  "2026-11-18T15:23:28.990Z"
+                            },
+                            {
+                                "id":  "usr-tch-001",
+                                "teacherId":  "TCH-2026-99",
+                                "name":  "Pooja Tiwari",
+                                "email":  "pooja.tiwari@apps.edu.in",
+                                "phone":  "9876500011",
+                                "role":  "TEACHER",
+                                "password":  "TeacherPass@123",
+                                "className":  "Class 4",
+                                "sectionName":  "A",
+                                "subject":  "Mathematics",
+                                "rollNumber":  "1",
+                                "otpVerified":  true,
+                                "registeredAt":  "2026-11-18T15:19:05.627Z",
+                                "status":  "APPROVED",
+                                "approvedAt":  "2026-11-18T15:19:10.242Z"
+                            }
+                        ],
+    "timetable":  [
+                      {
+                          "id":  "tt-1",
+                          "day":  "Monday",
+                          "period":  1,
+                          "time":  "08:30 AM - 09:15 AM",
+                          "subject":  "Mathematics",
+                          "teacher":  "Sunita Sharma",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-2",
+                          "day":  "Monday",
+                          "period":  2,
+                          "time":  "09:15 AM - 10:00 AM",
+                          "subject":  "Hindi Literature",
+                          "teacher":  "Kamlesh Tiwari",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-3",
+                          "day":  "Monday",
+                          "period":  3,
+                          "time":  "10:00 AM - 10:45 AM",
+                          "subject":  "English Grammar",
+                          "teacher":  "Renu Gupta",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-4",
+                          "day":  "Monday",
+                          "period":  4,
+                          "time":  "11:15 AM - 12:00 PM",
+                          "subject":  "General Science",
+                          "teacher":  "Anil Verma",
+                          "room":  "Science Lab",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-5",
+                          "day":  "Monday",
+                          "period":  5,
+                          "time":  "12:00 PM - 12:45 PM",
+                          "subject":  "Social Studies",
+                          "teacher":  "Priya Srivastava",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-6",
+                          "day":  "Monday",
+                          "period":  6,
+                          "time":  "01:15 PM - 02:00 PM",
+                          "subject":  "Computer Applications",
+                          "teacher":  "Vikas Dubey",
+                          "room":  "IT Lab",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-7",
+                          "day":  "Monday",
+                          "period":  7,
+                          "time":  "02:00 PM - 02:40 PM",
+                          "subject":  "Physical Education / Sports",
+                          "teacher":  "Rajesh Yadav",
+                          "room":  "Playground",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-8",
+                          "day":  "Tuesday",
+                          "period":  1,
+                          "time":  "08:30 AM - 09:15 AM",
+                          "subject":  "English Grammar",
+                          "teacher":  "Renu Gupta",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-9",
+                          "day":  "Tuesday",
+                          "period":  2,
+                          "time":  "09:15 AM - 10:00 AM",
+                          "subject":  "Mathematics",
+                          "teacher":  "Sunita Sharma",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-10",
+                          "day":  "Tuesday",
+                          "period":  3,
+                          "time":  "10:00 AM - 10:45 AM",
+                          "subject":  "General Science",
+                          "teacher":  "Anil Verma",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-11",
+                          "day":  "Tuesday",
+                          "period":  4,
+                          "time":  "11:15 AM - 12:00 PM",
+                          "subject":  "Hindi Literature",
+                          "teacher":  "Kamlesh Tiwari",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-12",
+                          "day":  "Tuesday",
+                          "period":  5,
+                          "time":  "12:00 PM - 12:45 PM",
+                          "subject":  "Social Studies",
+                          "teacher":  "Priya Srivastava",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-13",
+                          "day":  "Tuesday",
+                          "period":  6,
+                          "time":  "01:15 PM - 02:00 PM",
+                          "subject":  "Art \u0026 Craft",
+                          "teacher":  "Sunita Sharma",
+                          "room":  "Art Room",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-14",
+                          "day":  "Tuesday",
+                          "period":  7,
+                          "time":  "02:00 PM - 02:40 PM",
+                          "subject":  "Library \u0026 Reading",
+                          "teacher":  "Library Incharge",
+                          "room":  "Library",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-15",
+                          "day":  "Wednesday",
+                          "period":  1,
+                          "time":  "08:30 AM - 09:15 AM",
+                          "subject":  "Mathematics",
+                          "teacher":  "Sunita Sharma",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-16",
+                          "day":  "Wednesday",
+                          "period":  2,
+                          "time":  "09:15 AM - 10:00 AM",
+                          "subject":  "General Science",
+                          "teacher":  "Anil Verma",
+                          "room":  "Science Lab",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-17",
+                          "day":  "Wednesday",
+                          "period":  3,
+                          "time":  "10:00 AM - 10:45 AM",
+                          "subject":  "English Grammar",
+                          "teacher":  "Renu Gupta",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-18",
+                          "day":  "Wednesday",
+                          "period":  4,
+                          "time":  "11:15 AM - 12:00 PM",
+                          "subject":  "Hindi Literature",
+                          "teacher":  "Kamlesh Tiwari",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-19",
+                          "day":  "Wednesday",
+                          "period":  5,
+                          "time":  "12:00 PM - 12:45 PM",
+                          "subject":  "Computer Applications",
+                          "teacher":  "Vikas Dubey",
+                          "room":  "IT Lab",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-20",
+                          "day":  "Wednesday",
+                          "period":  6,
+                          "time":  "01:15 PM - 02:00 PM",
+                          "subject":  "Social Studies",
+                          "teacher":  "Priya Srivastava",
+                          "room":  "Room 104",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      },
+                      {
+                          "id":  "tt-21",
+                          "day":  "Wednesday",
+                          "period":  7,
+                          "time":  "02:00 PM - 02:40 PM",
+                          "subject":  "Music \u0026 Dance",
+                          "teacher":  "Guest Instructor",
+                          "room":  "Activity Hall",
+                          "className":  "Class 4",
+                          "sectionName":  "A"
+                      }
+                  ]
 }

@@ -37,10 +37,12 @@ interface ChildStudent {
 export default function ParentPortal() {
   const [children, setChildren] = useState<ChildStudent[]>([]);
   const [selectedChild, setSelectedChild] = useState<ChildStudent | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
+    let u: any = null;
     try {
       const storedUser = localStorage.getItem('apps_user');
       const token = localStorage.getItem('apps_token');
@@ -48,25 +50,92 @@ export default function ParentPortal() {
         window.location.replace('/login/parent');
         return;
       }
-      const u = JSON.parse(storedUser);
+      u = JSON.parse(storedUser);
       if (u.role !== 'PARENT' && u.role !== 'PRINCIPAL') {
         window.location.replace('/login/parent');
         return;
       }
+      setCurrentUser(u);
     } catch (e) {
       window.location.replace('/login/parent');
       return;
     }
-    fetchChildren();
+    fetchChildren(u);
   }, []);
 
-  const fetchChildren = async () => {
+  const fetchChildren = async (activeUser?: any) => {
     try {
       setLoading(true);
-      const res = await fetch('/api/v1/students');
+      const user = activeUser || currentUser || (() => {
+        try {
+          const raw = localStorage.getItem('apps_user');
+          return raw ? JSON.parse(raw) : null;
+        } catch {
+          return null;
+        }
+      })();
+
+      const token = typeof window !== 'undefined' ? localStorage.getItem('apps_token') : null;
+      const userPhone = user?.phone || '';
+      const userEmail = user?.email || '';
+
+      const queryParams = new URLSearchParams();
+      if (userPhone) queryParams.set('phone', userPhone);
+      if (userEmail) queryParams.set('email', userEmail);
+
+      // Call dedicated Parent Children endpoint
+      let res = await fetch(`/api/v1/parent/my-children?${queryParams.toString()}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        res = await fetch(`/api/v1/students?${queryParams.toString()}`, {
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
       if (res.ok) {
         const json = await res.json();
-        const rawStudents = json.data || [];
+        let rawStudents = json.data || [];
+
+        // STRICT ACCESS CONTROL:
+        // Double filter: A parent MUST ONLY see their own child/children
+        if (user && user.role === 'PARENT') {
+          const norm = (val?: string) => (val || '').replace(/[^0-9]/g, '').slice(-10);
+          const pPhone = norm(user.phone);
+          const pEmail = (user.email || '').toLowerCase().trim();
+
+          rawStudents = rawStudents.filter((s: any) => {
+            // Match parent ID
+            if (s.parentId && (s.parentId === user.id || s.parentId === user.userId || s.parentId === user.parentProfile?.id)) {
+              return true;
+            }
+            // Match phone (last 10 digits)
+            if (pPhone && s.parentPhone && norm(s.parentPhone) === pPhone) {
+              return true;
+            }
+            // Match email
+            if (pEmail && s.parentEmail && s.parentEmail.toLowerCase().trim() === pEmail) {
+              return true;
+            }
+            // Match child name if registered
+            if (user.childName && `${s.firstName} ${s.lastName || ''}`.trim().toLowerCase() === user.childName.trim().toLowerCase()) {
+              return true;
+            }
+            // Match admission number
+            if (user.childAdmissionNo && (s.admissionNo === user.childAdmissionNo || s.id === user.childAdmissionNo)) {
+              return true;
+            }
+            return false;
+          });
+        }
+
         const mapped: ChildStudent[] = rawStudents.map((s: any) => ({
           id: s.id,
           admissionNo: s.admissionNo || `APPS/${s.id}`,
@@ -80,6 +149,7 @@ export default function ParentPortal() {
           pendingAmount: 0,
           recentExamGrade: 'A1 (CBSE)',
         }));
+
         setChildren(mapped);
         if (mapped.length > 0) {
           setSelectedChild(mapped[0]);
@@ -88,7 +158,7 @@ export default function ParentPortal() {
         }
       }
     } catch (e) {
-      console.warn('Failed to fetch students from backend:', e);
+      console.warn('Failed to fetch children from backend:', e);
       setChildren([]);
       setSelectedChild(null);
     } finally {
@@ -147,22 +217,42 @@ export default function ParentPortal() {
             )}
           </div>
 
-          {/* Empty State when zero students exist */}
+          {/* Empty State when zero students belong to this parent */}
           {children.length === 0 ? (
-            <div className="p-12 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
-              <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div className="p-8 sm:p-12 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+              <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-3 shadow-inner">
                 <Users className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-slate-800">No Student Records Found</h3>
-              <p className="text-xs text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">
-                Sabhi fake/test students clear kar diye gaye hain. Real students admit hone ya excel se upload hone ke baad yahan automatically display hone lagenge.
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                🔒 Data Privacy & Child Safety Active
+              </span>
+              <h3 className="text-lg font-bold text-slate-800 mt-3">Aapka Baccha Abhi Link Nahi Hai</h3>
+              <p className="text-xs text-slate-500 max-w-lg mx-auto mt-2 leading-relaxed">
+                School Data Protection Policy ke tehat, Parent Login par <b>sirf aapke apne bacche ka data</b> hi show hota hai, kisi doosre student ka nahi.
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+              <div className="p-4 bg-slate-50 rounded-xl max-w-md mx-auto my-4 text-left text-xs space-y-1.5 border border-slate-200">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Logged in Parent:</span>
+                  <span className="font-bold text-slate-800">{currentUser?.name || 'Parent Guardian'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Registered Phone:</span>
+                  <span className="font-mono font-bold text-indigo-700">{currentUser?.phone || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Registered Email:</span>
+                  <span className="font-mono text-slate-700">{currentUser?.email || '—'}</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 max-w-md mx-auto">
+                Yadi admission ho chuka hai to kripya School Office / Principal se sampark karke apna mobile number register karwayein.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
                 <button
-                  onClick={fetchChildren}
+                  onClick={() => fetchChildren()}
                   className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-md transition-all flex items-center space-x-2"
                 >
-                  <span>Refresh Portal</span>
+                  <span>Refresh Status</span>
                 </button>
               </div>
             </div>
