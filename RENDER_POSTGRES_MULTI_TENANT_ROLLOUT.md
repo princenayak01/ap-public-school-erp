@@ -12,11 +12,16 @@ Status: implementation branch only. This document is a rollout contract; it does
 
 ## Changes already staged on this branch
 
-1. JWT middleware now rejects missing, malformed, expired, and invalid Bearer tokens. It no longer manufactures a Principal identity when a token is absent.
-2. Parent portal queries now resolve the parent only by the verified JWT `userId`. Caller-supplied phone/email and the hard-coded parent-to-ward map are no longer authorization inputs.
-3. Student detail lookup no longer returns the first student when the requested student ID is missing or the database is unavailable.
+- Fail-closed JWT authentication; database-backed login/refresh only; no demo fallback identity.
+- Parent portal access is resolved from the verified JWT subject and database parent-child relationship.
+- Frontend login fallback tokens and the hard-coded parent-to-child directory have been removed; dashboard sessions are checked against the backend.
+- Protected API routes require a valid token and PostgreSQL availability. Unscoped teacher access has been removed from student, attendance, and exam routes.
+- JSON datastore fallbacks and fabricated success responses have been removed or disabled for student, fee, attendance, exam, timetable, and dashboard operations.
+- Production configuration requires strong distinct JWT secrets and an explicit frontend origin; demo seeding requires explicit opt-in.
+- Fee payment requests are validated and concurrent balance updates are guarded against stale writes.
+- The committed runtime JSON data file was removed from this branch and added to `.gitignore`.
 
-These are source changes only. They have not been built, tested against the live Render database, merged, or deployed. Authentication still has additional demo/fallback paths in the auth service and other API routes still require authorization and tenant-scoping review. Do not treat this branch as production-ready.
+These are source changes only. One CI build passed at an earlier commit; the latest branch commit still needs its own CI result. No Render database backup, restore rehearsal, SQL migration, data backfill, merge, or production deployment has been performed. The Prisma schema still has no tenant ownership model, and this branch is not production-ready.
 
 ## Required tenant data model
 
