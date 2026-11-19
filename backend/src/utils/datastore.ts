@@ -263,6 +263,7 @@ class DataStore {
           parentPhone: '9876543213',
           phone: '9876543213',
           parentEmail: 'parent.sharma@gmail.com',
+          term: 'Term 1 (April – June)',
           month: 'April 2026',
           feeHead: 'Tuition Fee (Session 2026-27)',
           totalAmount: 2000,
@@ -287,6 +288,7 @@ class DataStore {
           parentPhone: '9876543216',
           phone: '9876543216',
           parentEmail: 'parent.verma@gmail.com',
+          term: 'Term 1 (April – June)',
           month: 'April 2026',
           feeHead: 'Tuition Fee (Session 2026-27)',
           totalAmount: 1800,
@@ -311,6 +313,7 @@ class DataStore {
           parentPhone: '9876543218',
           phone: '9876543218',
           parentEmail: 'parent.singh@gmail.com',
+          term: 'Term 1 (April – June)',
           month: 'April 2026',
           feeHead: 'Tuition Fee (Session 2026-27)',
           totalAmount: 2200,
@@ -335,6 +338,7 @@ class DataStore {
           parentPhone: '7309720610',
           phone: '7309720610',
           parentEmail: 'prince.nayak@gmail.com',
+          term: 'Term 1 (April – June)',
           month: 'April 2026',
           feeHead: 'Tuition Fee (Session 2026-27)',
           totalAmount: 2000,
@@ -361,6 +365,7 @@ class DataStore {
     parentName?: string;
     parentPhone?: string;
     parentEmail?: string;
+    term?: string;
     month?: string;
     feeHead?: string;
     totalAmount: number;
@@ -405,6 +410,8 @@ class DataStore {
       existingInv.receiptNumber = receiptNo;
       existingInv.paymentMode = receiptData.paymentMode || existingInv.paymentMode || 'CASH';
       existingInv.remarks = receiptData.remarks || (existingInv.balanceAmount === 0 ? 'No Due - Full Fee Paid' : `Partial Fee Paid, Remaining Due: ₹${existingInv.balanceAmount}`);
+      if (receiptData.term) existingInv.term = receiptData.term;
+      if (receiptData.month) existingInv.month = receiptData.month;
       existingInv.fatherName = fatherName;
       existingInv.parentName = fatherName;
       existingInv.parentPhone = parentPhone;
@@ -449,6 +456,7 @@ class DataStore {
       parentPhone,
       phone: parentPhone,
       parentEmail,
+      term: receiptData.term || 'Term 1 (April – June)',
       month: receiptData.month || 'Session 2026-27',
       feeHead: receiptData.feeHead || 'Tuition & Academic Fee',
       totalAmount,

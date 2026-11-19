@@ -98,6 +98,72 @@ const CANONICAL_FALLBACK_STUDENTS = [
   },
 ];
 
+const CBSE_FEE_TERMS = [
+  {
+    id: 'ALL',
+    label: 'All Terms (Full Session)',
+    shortLabel: 'All Terms',
+    period: 'April 2026 – March 2027',
+    badgeClass: 'bg-slate-100 text-slate-800 border-slate-200',
+    months: [
+      'April 2026', 'May 2026', 'June 2026',
+      'July 2026', 'August 2026', 'September 2026',
+      'October 2026', 'November 2026', 'December 2026',
+      'January 2027', 'February 2027', 'March 2027'
+    ],
+  },
+  {
+    id: 'TERM_1',
+    label: 'Term 1 (April – June)',
+    shortLabel: 'Term 1 (Q1)',
+    period: 'April – June',
+    badgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    months: ['Full Term 1 (Apr – Jun)', 'April 2026', 'May 2026', 'June 2026'],
+  },
+  {
+    id: 'TERM_2',
+    label: 'Term 2 (July – September)',
+    shortLabel: 'Term 2 (Q2)',
+    period: 'July – September',
+    badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    months: ['Full Term 2 (Jul – Sep)', 'July 2026', 'August 2026', 'September 2026'],
+  },
+  {
+    id: 'TERM_3',
+    label: 'Term 3 (October – December)',
+    shortLabel: 'Term 3 (Q3)',
+    period: 'October – December',
+    badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
+    months: ['Full Term 3 (Oct – Dec)', 'October 2026', 'November 2026', 'December 2026'],
+  },
+  {
+    id: 'TERM_4',
+    label: 'Term 4 (January – March)',
+    shortLabel: 'Term 4 (Q4)',
+    period: 'January – March',
+    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200',
+    months: ['Full Term 4 (Jan – Mar)', 'January 2027', 'February 2027', 'March 2027'],
+  },
+];
+
+function resolveFeeTerm(termOrMonth?: string) {
+  if (!termOrMonth) return CBSE_FEE_TERMS[1];
+  const s = termOrMonth.toLowerCase();
+  if (s.includes('term 1') || s.includes('q1') || s.includes('apr') || s.includes('may') || s.includes('jun')) {
+    return CBSE_FEE_TERMS[1];
+  }
+  if (s.includes('term 2') || s.includes('q2') || s.includes('jul') || s.includes('aug') || s.includes('sep')) {
+    return CBSE_FEE_TERMS[2];
+  }
+  if (s.includes('term 3') || s.includes('q3') || s.includes('oct') || s.includes('nov') || s.includes('dec')) {
+    return CBSE_FEE_TERMS[3];
+  }
+  if (s.includes('term 4') || s.includes('q4') || s.includes('jan') || s.includes('feb') || s.includes('mar')) {
+    return CBSE_FEE_TERMS[4];
+  }
+  return CBSE_FEE_TERMS[1];
+}
+
 const INITIAL_FALLBACK_INVOICES = [
   {
     id: 'inv-001',
@@ -113,6 +179,7 @@ const INITIAL_FALLBACK_INVOICES = [
     phone: '9876543213',
     parentEmail: 'parent.sharma@gmail.com',
     email: 'parent.sharma@gmail.com',
+    term: 'Term 1 (April – June)',
     month: 'April 2026',
     feeHead: 'Tuition Fee (Session 2026-27)',
     total: 2000,
@@ -137,6 +204,7 @@ const INITIAL_FALLBACK_INVOICES = [
     phone: '9876543216',
     parentEmail: 'parent.verma@gmail.com',
     email: 'parent.verma@gmail.com',
+    term: 'Term 1 (April – June)',
     month: 'April 2026',
     feeHead: 'Tuition Fee (Session 2026-27)',
     total: 1800,
@@ -161,7 +229,8 @@ const INITIAL_FALLBACK_INVOICES = [
     phone: '9876543218',
     parentEmail: 'parent.singh@gmail.com',
     email: 'parent.singh@gmail.com',
-    month: 'April 2026',
+    term: 'Term 1 (April – June)',
+    month: 'Full Term 1 (Apr – Jun)',
     feeHead: 'Tuition Fee (Session 2026-27)',
     total: 2200,
     paid: 2200,
@@ -185,6 +254,7 @@ const INITIAL_FALLBACK_INVOICES = [
     phone: '7309720610',
     parentEmail: 'prince.nayak@gmail.com',
     email: 'prince.nayak@gmail.com',
+    term: 'Term 1 (April – June)',
     month: 'April 2026',
     feeHead: 'Tuition Fee (Session 2026-27)',
     total: 2000,
@@ -228,6 +298,7 @@ export default function FeesPage() {
   const [activeRole, setActiveRole] = useState<'TEACHER' | 'PARENT' | 'PRINCIPAL'>('PRINCIPAL');
   const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [selectedMonth, setSelectedMonth] = useState<string>('All Months (Apr - Mar)');
+  const [selectedTermFilter, setSelectedTermFilter] = useState<string>('ALL');
   const [tableSearch, setTableSearch] = useState<string>('');
   const [studentSearchQuery, setStudentSearchQuery] = useState<string>('');
 
@@ -237,8 +308,13 @@ export default function FeesPage() {
   const [showClearDuesModal, setShowClearDuesModal] = useState<boolean>(false);
   const [clearDuesAmount, setClearDuesAmount] = useState<number>(0);
   const [clearDuesMode, setClearDuesMode] = useState<string>('CASH');
+  const [clearDuesTerm, setClearDuesTerm] = useState<string>('TERM_1');
   const [clearDuesMonth, setClearDuesMonth] = useState<string>('April 2026');
   const [clearDuesRemarks, setClearDuesRemarks] = useState<string>('');
+
+  // Offline Payment Modal Term/Month
+  const [offlineTerm, setOfflineTerm] = useState<string>('TERM_1');
+  const [offlineMonth, setOfflineMonth] = useState<string>('April 2026');
 
   // Manual Receipt Form State
   const [formData, setFormData] = useState({
@@ -247,6 +323,7 @@ export default function FeesPage() {
     className: 'Class 4',
     rollNo: '01',
     admissionNo: '',
+    term: 'TERM_1',
     month: 'April 2026',
     feeHead: 'Tuition Fee (Session 2026-27)',
     totalAmount: '2000',
@@ -316,7 +393,8 @@ export default function FeesPage() {
                 phone: inv.phone || inv.parentPhone || matchedStudent?.parentPhone || '+91-9876543210',
                 parentEmail: inv.parentEmail || inv.email || matchedStudent?.parentEmail || '',
                 email: inv.email || inv.parentEmail || matchedStudent?.parentEmail || '',
-                month: inv.month,
+                term: inv.term || resolveFeeTerm(inv.month).label,
+                month: inv.month || 'April 2026',
                 feeHead: inv.feeHead || 'Tuition Fee',
                 total: Number(inv.totalAmount) || 0,
                 paid: Number(inv.paidAmount) || 0,
@@ -419,12 +497,15 @@ export default function FeesPage() {
     const autoInvoiceNo = `INV-2026-${String(count).padStart(3, '0')}`;
     const dateToday = new Date().toISOString().split('T')[0];
 
+    const termLabel = CBSE_FEE_TERMS.find((t) => t.id === formData.term)?.label || formData.term;
+
     const payload = {
       studentId: formData.studentId || `std-custom-${Date.now()}`,
       studentName: formData.studentName,
       className: formData.className,
       rollNo: formData.rollNo,
       admissionNo: formData.admissionNo || `APPS/2026/${String(count).padStart(3, '0')}`,
+      term: termLabel,
       month: formData.month,
       feeHead: formData.feeHead,
       totalAmount: curTotal,
@@ -450,6 +531,7 @@ export default function FeesPage() {
         class: payload.className,
         rollNo: payload.rollNo,
         admissionNo: payload.admissionNo,
+        term: termLabel,
         month: payload.month,
         feeHead: payload.feeHead,
         total: curTotal,
@@ -476,6 +558,7 @@ export default function FeesPage() {
         class: payload.className,
         rollNo: payload.rollNo,
         admissionNo: payload.admissionNo,
+        term: termLabel,
         month: payload.month,
         feeHead: payload.feeHead,
         total: curTotal,
@@ -563,6 +646,7 @@ export default function FeesPage() {
     if (!showOfflineModal) return;
     setProcessing(true);
     const invId = showOfflineModal.id;
+    const offlineTermLabel = CBSE_FEE_TERMS.find((t) => t.id === offlineTerm)?.label || offlineTerm;
 
     try {
       const res = await fetch('/api/v1/fees/pay', {
@@ -572,6 +656,8 @@ export default function FeesPage() {
           invoiceId: invId,
           amountPaid: Number(offlineAmount),
           paymentMode,
+          term: offlineTermLabel,
+          month: offlineMonth,
           transactionId: `CASH_${Date.now()}`,
         }),
       });
@@ -590,6 +676,8 @@ export default function FeesPage() {
               balance: newBal,
               status: newBal === 0 ? 'PAID' : 'PARTIAL',
               receiptNo,
+              term: offlineTermLabel,
+              month: offlineMonth || inv.month,
             };
             return updatedTarget;
           }
@@ -598,7 +686,7 @@ export default function FeesPage() {
       );
 
       setShowOfflineModal(null);
-      setSuccessMsg(data.message || `Payment of ₹${offlineAmount} recorded! Receipt: ${receiptNo}`);
+      setSuccessMsg(data.message || `Payment of ₹${offlineAmount} recorded for ${offlineTermLabel}! Receipt: ${receiptNo}`);
       if (updatedTarget) {
         setActiveReceiptModal(updatedTarget);
       }
@@ -616,6 +704,8 @@ export default function FeesPage() {
               balance: newBal,
               status: newBal === 0 ? 'PAID' : 'PARTIAL',
               receiptNo: nextRec,
+              term: offlineTermLabel,
+              month: offlineMonth || inv.month,
             };
             return updatedTarget;
           }
@@ -710,6 +800,8 @@ export default function FeesPage() {
     const parentPhone = st.parentPhone || st.phone || '+91-9876543210';
     const parentEmail = st.parentEmail || st.email || '';
 
+    const termLabel = CBSE_FEE_TERMS.find((t) => t.id === clearDuesTerm)?.label || clearDuesTerm;
+
     const payload = {
       studentId: st.id,
       studentName: `${st.firstName} ${st.lastName || ''}`.trim(),
@@ -719,6 +811,7 @@ export default function FeesPage() {
       fatherName,
       parentPhone,
       parentEmail,
+      term: termLabel,
       month: clearDuesMonth,
       feeHead: 'Tuition Fee (Session 2026-27)',
       totalAmount: targetInv ? targetInv.total : amountToClear,
@@ -749,6 +842,7 @@ export default function FeesPage() {
         fatherName: payload.fatherName,
         parentPhone: payload.parentPhone,
         parentEmail: payload.parentEmail,
+        term: termLabel,
         month: payload.month,
         feeHead: payload.feeHead,
         total: targetInv ? targetInv.total : amountToClear,
@@ -770,7 +864,7 @@ export default function FeesPage() {
 
       setShowClearDuesModal(false);
       setActiveReceiptModal(updatedInv);
-      setSuccessMsg(`Fee payment of ₹${amountToClear} submitted! Receipt ${receiptNo} generated with School Logo!`);
+      setSuccessMsg(`Fee payment of ₹${amountToClear} submitted for ${termLabel} (${clearDuesMonth})! Receipt ${receiptNo} generated.`);
     } catch (err) {
       const fallbackInv = {
         id: targetInv?.id || `inv-${Date.now()}`,
@@ -783,6 +877,7 @@ export default function FeesPage() {
         fatherName: payload.fatherName,
         parentPhone: payload.parentPhone,
         parentEmail: payload.parentEmail,
+        term: termLabel,
         month: payload.month,
         feeHead: payload.feeHead,
         total: targetInv ? targetInv.total : amountToClear,
@@ -833,6 +928,14 @@ export default function FeesPage() {
       }
     }
 
+    // Filter by CBSE 4 Terms (Quarter)
+    if (selectedTermFilter && selectedTermFilter !== 'ALL') {
+      const invTermObj = resolveFeeTerm(inv.term || inv.month);
+      if (invTermObj.id !== selectedTermFilter) {
+        return false;
+      }
+    }
+
     if (tableSearch.trim()) {
       const q = tableSearch.toLowerCase().trim();
       const normQ = q.replace(/[^0-9]/g, '');
@@ -841,6 +944,8 @@ export default function FeesPage() {
         inv.fatherName?.toLowerCase().includes(q) ||
         inv.parentName?.toLowerCase().includes(q) ||
         inv.parentEmail?.toLowerCase().includes(q) ||
+        inv.term?.toLowerCase().includes(q) ||
+        inv.month?.toLowerCase().includes(q) ||
         (normQ.length >= 3 && (inv.parentPhone || inv.phone)?.replace(/[^0-9]/g, '').includes(normQ)) ||
         inv.admissionNo?.toLowerCase().includes(q) ||
         inv.receiptNo?.toLowerCase().includes(q) ||
@@ -1393,6 +1498,22 @@ export default function FeesPage() {
                     )}
                   </div>
 
+                  {/* Term Filter Dropdown (CBSE 4 Terms) */}
+                  <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5">
+                    <span className="text-[11px] font-bold text-slate-500">Term:</span>
+                    <select
+                      value={selectedTermFilter}
+                      onChange={(e) => setSelectedTermFilter(e.target.value)}
+                      className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+                    >
+                      {CBSE_FEE_TERMS.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <button
                     onClick={() => {
                       setFormData({
@@ -1401,6 +1522,7 @@ export default function FeesPage() {
                         className: 'Class 4',
                         rollNo: '01',
                         admissionNo: '',
+                        term: 'TERM_1',
                         month: 'April 2026',
                         feeHead: 'Monthly Tuition Fee',
                         totalAmount: '2000',
@@ -1428,7 +1550,9 @@ export default function FeesPage() {
                     <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase font-bold tracking-wider">
                       <th className="py-3 px-4">Receipt / Inv No</th>
                       <th className="py-3 px-4">Student</th>
-                      <th className="py-3 px-4">Month / Particulars</th>
+                      <th className="py-3 px-4">Fee Term (Quarter)</th>
+                      <th className="py-3 px-4">Submitted Month(s)</th>
+                      <th className="py-3 px-4">Particulars</th>
                       <th className="py-3 px-4">Total</th>
                       <th className="py-3 px-4">Paid</th>
                       <th className="py-3 px-4">Balance</th>
@@ -1439,7 +1563,7 @@ export default function FeesPage() {
                   <tbody className="divide-y divide-slate-100">
                     {filteredInvoices.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="py-14 text-center">
+                        <td colSpan={10} className="py-14 text-center">
                           <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-3 border border-teal-100 shadow-inner">
                             <Receipt className="w-7 h-7" />
                           </div>
@@ -1455,6 +1579,7 @@ export default function FeesPage() {
                                 className: 'Class 4',
                                 rollNo: '01',
                                 admissionNo: '',
+                                term: 'TERM_1',
                                 month: 'April 2026',
                                 feeHead: 'Monthly Tuition Fee',
                                 totalAmount: '2000',
@@ -1472,41 +1597,54 @@ export default function FeesPage() {
                         </td>
                       </tr>
                     ) : (
-                      filteredInvoices.map((inv) => (
-                        <tr key={inv.id} className="hover:bg-slate-50/70 transition-colors">
-                          <td className="py-3 px-4">
-                            <span className="font-mono font-bold text-indigo-900 block">{inv.receiptNo || inv.invoiceNo}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">{inv.invoiceNo}</span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="font-bold text-slate-800 block">{inv.studentName}</span>
-                            <span className="text-[10px] text-slate-500">
-                              {inv.class} • Roll {inv.rollNo || '01'}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="text-slate-800 font-semibold block">{inv.month}</span>
-                            <span className="text-[10px] text-slate-500">{inv.feeHead || 'Tuition Fee'}</span>
-                          </td>
-                          <td className="py-3 px-4 font-bold text-slate-900">₹{inv.total}</td>
-                          <td className="py-3 px-4 text-teal-700 font-semibold">₹{inv.paid}</td>
-                          <td className="py-3 px-4 font-bold text-rose-600">
-                            {inv.balance === 0 ? <span className="text-emerald-600 font-bold">₹0</span> : `₹${inv.balance}`}
-                          </td>
-                          <td className="py-3 px-4">
-                            <span
-                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                                inv.status === 'PAID'
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : inv.status === 'PARTIAL'
-                                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                  : 'bg-rose-50 text-rose-700 border border-rose-200'
-                              }`}
-                            >
-                              {inv.status === 'PAID' ? '✓ NO DUE' : inv.status}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
+                      filteredInvoices.map((inv) => {
+                        const termObj = resolveFeeTerm(inv.term || inv.month);
+                        return (
+                          <tr key={inv.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-3 px-4">
+                              <span className="font-mono font-bold text-indigo-900 block">{inv.receiptNo || inv.invoiceNo}</span>
+                              <span className="text-[10px] text-slate-400 font-mono">{inv.invoiceNo}</span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-slate-800 block">{inv.studentName}</span>
+                              <span className="text-[10px] text-slate-500">
+                                {inv.class} • Roll {inv.rollNo || '01'}
+                              </span>
+                            </td>
+                            {/* DEDICATED COLUMN: Fee Term (Quarter) */}
+                            <td className="py-3 px-4">
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-black border uppercase tracking-wide inline-block ${termObj.badgeClass}`}>
+                                {termObj.shortLabel}
+                              </span>
+                              <span className="text-[10px] text-slate-500 block mt-0.5">{termObj.period}</span>
+                            </td>
+                            {/* DEDICATED COLUMN: Submitted Month(s) */}
+                            <td className="py-3 px-4">
+                              <span className="text-slate-900 font-bold block">{inv.month || 'April 2026'}</span>
+                              <span className="text-[10px] text-teal-700 font-medium">Session 2026–27</span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-slate-700 font-semibold">{inv.feeHead || 'Tuition Fee'}</span>
+                            </td>
+                            <td className="py-3 px-4 font-bold text-slate-900">₹{inv.total}</td>
+                            <td className="py-3 px-4 text-teal-700 font-semibold">₹{inv.paid}</td>
+                            <td className="py-3 px-4 font-bold text-rose-600">
+                              {inv.balance === 0 ? <span className="text-emerald-600 font-bold">₹0</span> : `₹${inv.balance}`}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                  inv.status === 'PAID'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : inv.status === 'PARTIAL'
+                                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    : 'bg-rose-50 text-rose-700 border border-rose-200'
+                                }`}
+                              >
+                                {inv.status === 'PAID' ? '✓ NO DUE' : inv.status}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
                             <button
                               onClick={() => setActiveReceiptModal(inv)}
                               className="px-2.5 py-1 rounded-md bg-teal-50 text-teal-700 hover:bg-teal-100 font-bold text-[11px] inline-flex items-center space-x-1 border border-teal-200 transition-all"
@@ -1536,8 +1674,8 @@ export default function FeesPage() {
                             )}
                           </td>
                         </tr>
-                      ))
-                    )}
+                      );
+                    }))}
                   </tbody>
                 </table>
               </div>
@@ -1693,14 +1831,38 @@ export default function FeesPage() {
                     </div>
 
                     <div>
-                      <label className="font-semibold text-slate-700 block mb-1">Month / Academic Session</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. April 2026 or Quarter 1"
+                      <label className="font-semibold text-slate-700 block mb-1">Fee Term (Quarter) *</label>
+                      <select
+                        value={formData.term}
+                        onChange={(e) => {
+                          const newTerm = e.target.value;
+                          const termObj = CBSE_FEE_TERMS.find((t) => t.id === newTerm);
+                          const firstMonth = termObj?.months?.[1] || termObj?.months?.[0] || 'April 2026';
+                          setFormData({ ...formData, term: newTerm, month: firstMonth });
+                        }}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white"
+                      >
+                        {CBSE_FEE_TERMS.filter((t) => t.id !== 'ALL').map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.label} ({t.period})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-slate-700 block mb-1">Choose Month(s) Submitted *</label>
+                      <select
                         value={formData.month}
                         onChange={(e) => setFormData({ ...formData, month: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800"
-                      />
+                        className="w-full px-3 py-2 rounded-xl border border-indigo-300 text-xs font-bold text-indigo-900 bg-white"
+                      >
+                        {(CBSE_FEE_TERMS.find((t) => t.id === formData.term)?.months || []).map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
@@ -1927,7 +2089,10 @@ export default function FeesPage() {
                         Payment Date: <strong className="text-slate-900">{activeReceiptModal.createdAt || '2026-11-18'}</strong>
                       </p>
                       <p className="text-slate-500">
-                        Academic Session: <strong className="text-slate-900">2026–2027</strong>
+                        Academic Term: <strong className="text-indigo-950 font-bold">{resolveFeeTerm(activeReceiptModal.term || activeReceiptModal.month).label}</strong>
+                      </p>
+                      <p className="text-slate-500">
+                        Submitted Month: <strong className="text-teal-950 font-bold">{activeReceiptModal.month || 'April 2026'}</strong>
                       </p>
                     </div>
 
@@ -1954,7 +2119,8 @@ export default function FeesPage() {
                         <tr>
                           <th className="py-2.5 px-3">S.No</th>
                           <th className="py-2.5 px-3">Fee Particulars</th>
-                          <th className="py-2.5 px-3">Period / Month</th>
+                          <th className="py-2.5 px-3">Fee Term</th>
+                          <th className="py-2.5 px-3">Month(s) Covered</th>
                           <th className="py-2.5 px-3 text-right">Total Dues</th>
                           <th className="py-2.5 px-3 text-right">Amount Paid</th>
                           <th className="py-2.5 px-3 text-right">Balance</th>
@@ -1967,7 +2133,11 @@ export default function FeesPage() {
                             <span className="font-bold text-slate-900 block">{activeReceiptModal.feeHead || 'Tuition Fee'}</span>
                             <span className="text-[10px] text-slate-500">{activeReceiptModal.remarks || 'Standard Academic Dues'}</span>
                           </td>
-                          <td className="py-3 px-3 font-semibold text-slate-700">{activeReceiptModal.month}</td>
+                          <td className="py-3 px-3">
+                            <span className="font-bold text-indigo-900 block">{resolveFeeTerm(activeReceiptModal.term || activeReceiptModal.month).shortLabel}</span>
+                            <span className="text-[10px] text-slate-500">{resolveFeeTerm(activeReceiptModal.term || activeReceiptModal.month).period}</span>
+                          </td>
+                          <td className="py-3 px-3 font-bold text-slate-800">{activeReceiptModal.month || 'April 2026'}</td>
                           <td className="py-3 px-3 text-right font-bold text-slate-900">₹{activeReceiptModal.total}</td>
                           <td className="py-3 px-3 text-right font-bold text-teal-700">₹{activeReceiptModal.paid}</td>
                           <td className="py-3 px-3 text-right font-bold text-rose-600">
@@ -1977,7 +2147,7 @@ export default function FeesPage() {
                       </tbody>
                       <tfoot className="bg-slate-50 font-bold border-t-2 border-slate-800">
                         <tr>
-                          <td colSpan={4} className="py-2.5 px-3 text-right text-slate-700">
+                          <td colSpan={5} className="py-2.5 px-3 text-right text-slate-700">
                             NET AMOUNT RECEIVED:
                           </td>
                           <td className="py-2.5 px-3 text-right text-sm text-teal-800 font-black">
@@ -2128,6 +2298,42 @@ export default function FeesPage() {
                 </h3>
 
                 <form onSubmit={handleOfflinePay} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="font-semibold text-slate-600 block mb-1">Fee Term *</label>
+                      <select
+                        value={offlineTerm}
+                        onChange={(e) => {
+                          const newTerm = e.target.value;
+                          setOfflineTerm(newTerm);
+                          const termObj = CBSE_FEE_TERMS.find((t) => t.id === newTerm);
+                          setOfflineMonth(termObj?.months?.[1] || termObj?.months?.[0] || 'April 2026');
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-bold"
+                      >
+                        {CBSE_FEE_TERMS.filter((t) => t.id !== 'ALL').map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.shortLabel}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-semibold text-slate-600 block mb-1">Fee Month *</label>
+                      <select
+                        value={offlineMonth}
+                        onChange={(e) => setOfflineMonth(e.target.value)}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-indigo-300 text-xs font-bold text-indigo-900"
+                      >
+                        {(CBSE_FEE_TERMS.find((t) => t.id === offlineTerm)?.months || []).map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="font-semibold text-slate-600 block mb-1">Payment Mode</label>
                     <select
@@ -2189,10 +2395,42 @@ export default function FeesPage() {
                   </button>
                 </div>
                 <form onSubmit={handleClearDuesSubmit} className="space-y-4">
-                  <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Month / Period</label>
-                    <input type="text" value={clearDuesMonth} onChange={(e) => setClearDuesMonth(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800" placeholder="e.g. April 2026" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="font-semibold text-slate-700 block mb-1">Fee Term (Quarter) *</label>
+                      <select
+                        value={clearDuesTerm}
+                        onChange={(e) => {
+                          const newTerm = e.target.value;
+                          setClearDuesTerm(newTerm);
+                          const termObj = CBSE_FEE_TERMS.find((t) => t.id === newTerm);
+                          const firstMonth = termObj?.months?.[1] || termObj?.months?.[0] || 'April 2026';
+                          setClearDuesMonth(firstMonth);
+                        }}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white"
+                      >
+                        {CBSE_FEE_TERMS.filter((t) => t.id !== 'ALL').map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.label} ({t.period})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="font-semibold text-slate-700 block mb-1">Choose Month(s) Submitted *</label>
+                      <select
+                        value={clearDuesMonth}
+                        onChange={(e) => setClearDuesMonth(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-indigo-300 text-xs font-bold text-indigo-900 bg-white"
+                      >
+                        {(CBSE_FEE_TERMS.find((t) => t.id === clearDuesTerm)?.months || []).map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <label className="font-semibold text-slate-700 block mb-1">Amount Collecting (₹) *</label>
