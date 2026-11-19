@@ -1,5 +1,7 @@
 'use client';
 
+import { authenticatedFetch } from '@/lib/api';
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -94,8 +96,8 @@ export default function ExamsPage() {
     async function loadBackendMarks() {
       try {
         const [marksRes, studentsRes] = await Promise.all([
-          fetch('/api/v1/exams/marks'),
-          fetch('/api/v1/students'),
+          authenticatedFetch('/api/v1/exams/marks'),
+          authenticatedFetch('/api/v1/students'),
         ]);
 
         const marksData = await marksRes.json();
@@ -165,7 +167,7 @@ export default function ExamsPage() {
   const handleGenerateReports = async () => {
     setGeneratingBatch(true);
     try {
-      const res = await fetch('/api/v1/exams/generate-reports', {
+      const res = await authenticatedFetch('/api/v1/exams/generate-reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -203,7 +205,7 @@ export default function ExamsPage() {
 
   const handleOpenMarksModal = async () => {
     try {
-      const res = await fetch('/api/v1/students');
+      const res = await authenticatedFetch('/api/v1/students');
       const data = await res.json();
       const stList = data.data || [];
       if (manualRows.length === 0) {
@@ -305,7 +307,7 @@ export default function ExamsPage() {
         };
       });
 
-      const res = await fetch('/api/v1/exams/enter-marks', {
+      const res = await authenticatedFetch('/api/v1/exams/enter-marks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ records: recordsToSave }),
