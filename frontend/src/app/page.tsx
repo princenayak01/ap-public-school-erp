@@ -55,7 +55,7 @@ export default function LandingPage() {
                 CBSE
               </span>
             </div>
-            <span className="text-[10px] sm:text-[11px] text-amber-400 block font-medium truncate">Darausagar • Jhansi (UP) • Learn • Grow • Succeed</span>
+            <span className="text-[10px] sm:text-[11px] text-amber-400 block font-medium truncate">Baruasagar • Jhansi (UP) • Learn • Grow • Succeed</span>
           </div>
         </div>
 
